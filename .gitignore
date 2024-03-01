@@ -1,0 +1,5 @@
+# fichiers ignorés
+__pycache__/
+.jpeg
+.jpg
+

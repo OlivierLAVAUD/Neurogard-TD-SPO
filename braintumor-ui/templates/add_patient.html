@@ -1,0 +1,87 @@
+<!-- add_patient.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Patient</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='styles.css') }}">
+</head>
+<body>
+
+    <h1>Add Patient</h1>
+
+    <form id="patientForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required>
+
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+        <input type="file" id="radio">
+
+        <!-- Add other necessary fields based on the PatientModel -->
+
+        <button type="button" onclick="submitForm()">Submit</button>
+    </form>
+
+    <!-- Ajoutez ceci à votre fichier add_patient.html -->
+    <script>
+
+        async function submitForm() {
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+            const fileInput = document.getElementById('radio');
+            const file = fileInput.files[0];
+
+            const reader = new FileReader();
+
+            reader.onload = async function () {
+                const fileContentBase64 = reader.result.split(',')[1];
+
+                // Construire l'objet avec les données du formulaire
+                const formData = {
+                    name: name,
+                    age: age,
+                    gender: gender,
+                    radio: fileContentBase64
+                };
+                
+                try {
+                    const response = await fetch('/add_patient', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Rediriger vers la vue des patients après l'édition
+                        window.location.href = '/view_patients';
+                    })
+                    .catch(error => console.error('Error:', error));
+
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            };
+
+            // Read the file content as a Data URL (base64-encoded)
+            reader.readAsDataURL(file);
+
+        }
+    </script>
+
+
+
+</body>
+</html>
