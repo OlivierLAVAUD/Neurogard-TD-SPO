@@ -9,11 +9,15 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Disable GPU usage for TensorFlow
 from PIL import Image
 import io
 
-mlflow.set_tracking_uri(uri="http://127.0.0.1:8088")
+import sys
+sys.path.append('../')
+from config import MLFLOW_SERVER, MLFLOW_MODEL_RUNS, HOST, PORT_API_MODEL
+
+mlflow.set_tracking_uri(uri=MLFLOW_SERVER)
 
 app = FastAPI()
 
-logged_model = 'runs:/01542a96f94e43b7a72d6cd778ac1b9d/Neuroguard'
+logged_model = MLFLOW_MODEL_RUNS
 
 # Load model as a PyFuncModel.
 loaded_model = mlflow.pyfunc.load_model(logged_model)
@@ -121,4 +125,4 @@ async def predict(file: UploadFile):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host=HOST, port=PORT_API_MODEL)

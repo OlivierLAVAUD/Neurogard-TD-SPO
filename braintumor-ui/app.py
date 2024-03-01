@@ -10,11 +10,15 @@ from bson import ObjectId
 from pydantic import BaseModel
 import json
 
+import sys
+sys.path.append('../')
+from config import HOST, PORT_APP, MONGO_SERVER, MONGO_DB, PORT_API_MODEL
+
 app = FastAPI()
 
 # Connexion à la base de données MongoDB
-client = MongoClient("mongodb://root:example@localhost:27017/")
-db = client["braintumor"]  # Remplacez "your_database_name" par le nom de votre base de données MongoDB
+client = MongoClient(MONGO_SERVER)
+db = client[MONGO_DB]  # Remplacez "your_database_name" par le nom de votre base de données MongoDB
 
 
 # Modèle Pydantic pour les données du patient
@@ -70,7 +74,7 @@ async def add_patient_post(patient: PatientModel):
     print(f'patient', patient)
     files = {'file': ('nom_du_fichier_qui_ne_sert_a_rien.jpg', base64.b64decode(patient.radio))}
     # Make a POST request to the FastAPI endpoint
-    response = requests.post('http://127.0.0.1:8000/predict/', files=files)
+    response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/predict/', files=files)
     if response.status_code == 200:
         print(f'responseRAW', response.text)
         print(f'response', json.loads(response.text))
@@ -107,4 +111,4 @@ async def edit_patient_post(patient_id: str, patient: PatientUpdateModel):
     return RedirectResponse(url="/view_patients")
 
 if __name__ == '__main__':
-    uvicorn.run(app, host="127.0.0.1", port=7010)
+    uvicorn.run(app, host=HOST, port=PORT_APP)

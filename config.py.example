@@ -1,0 +1,17 @@
+#config MongoDB
+MONGO_SERVER = "mongodb://localhost:27017/"
+MONGO_DB = "braintumor"
+
+#config MLflow
+MLFLOW_SERVER = "http://127.0.0.1:5000"
+MLFLOW_MODEL_RUNS= 'runs:/e1edb92da0584330a407868ecaa70e8d/Neurogard'
+
+#config APIs
+
+HOST="127.0.0.1"
+
+#API neuroguard
+PORT_API_MODEL=8000
+
+#API app braintumor-ui
+PORT_APP=7010
