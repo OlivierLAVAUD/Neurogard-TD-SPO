@@ -79,7 +79,6 @@ async def add_patient_post(patient: PatientModel):
     # Make a POST request to the FastAPI endpoint
     response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/predict/', files=files)
     if response.status_code == 200:
-        print(f'responseRAW', response.text)
         print(f'response', json.loads(response.text))
         response_data = json.loads(response.text)
         patient.predict_score = response_data[0]
@@ -96,7 +95,7 @@ async def add_patient_post(patient: PatientModel):
 @app.get("/view_patients", response_class=HTMLResponse)
 async def view_patients(request: Request):
     # Récupérer tous les patients depuis la base de données
-    patients = [PatientViewModel(id=str(patient['_id']), **patient) for patient in db.patients.find().sort('predict.probabilité', -1)]
+    patients = [PatientViewModel(id=str(patient['_id']), **patient) for patient in db.patients.find().sort('predict_score', -1)]
     return templates.TemplateResponse("view_patients.html", {"request": request, "patients": patients})
 
 
