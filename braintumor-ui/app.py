@@ -100,11 +100,27 @@ async def edit_patient(request: Request, patient_id: str):
                                                             "patient_id": patient_id})
 
 
+
 @app.post("/edit_patient/{patient_id}")
 async def edit_patient_post(patient_id: str, patient: PatientUpdateModel):
     # Mettre à jour le patient dans la base de données
     db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": patient.model_dump()})
     return RedirectResponse(url="/view_patients")
+
+# Route pour voir un patient
+@app.post("/view_patient/{patient_id}")
+async def view_patient_post(patient_id: str, patient: PatientUpdateModel):
+    # Mettre à jour le patient dans la base de données
+    db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": patient.model_dump()})
+    return RedirectResponse(url="/view_patients")
+
+# Route pour voir un patient
+@app.get("/view_patient/{patient_id}", response_class=HTMLResponse)
+async def view_patient(request: Request, patient_id: str):
+    # Récupérer les informations du patient pour affichage dans le formulaire
+    patient = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
+    return templates.TemplateResponse("view_patient.html", {"request": request, "patient": patient,
+                                                            "patient_id": patient_id})
 
 if __name__ == '__main__':
     uvicorn.run(app, host="127.0.0.1", port=7010)
