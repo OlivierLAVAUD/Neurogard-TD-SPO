@@ -1,0 +1,100 @@
+<!-- edit_patient.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Patient</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='styles.css') }}">
+</head>
+<body>
+
+<h1>Validation Patient {{ patient.name }}</h1>
+
+<form id="editPatientForm">
+    <!-- Ajouter des champs pour éditer les informations du patient -->
+    <!-- Afficher les informations du patient -->
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" value="{{ patient.name }}" readonly>
+    <br>
+
+    <label for="age">Age:</label>
+    <input type="number" id="age" name="age" value="{{ patient.age }}" readonly>
+    <br>
+
+    <label for="gender">Gender:</label>
+    <input type="text" id="gender" name="gender" value="{{ patient.gender }}" readonly>
+    <br>
+
+    <!-- Ajouter un champ caché pour stocker l'ID du patient -->
+    <input type="hidden" id="patientId" name="patientId" value="{{ patient_id }}">
+    <br>
+    <div>Prédiction : </div><br>
+    <div><b>{{ patient.predict.prediction }}  {{ patient.predict.probabilité }}%</b></div><br>
+    <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
+    <br><br>
+    <a href="#">rapport pdf à charger</a>
+    <br><br>
+
+    <fieldset>
+        <legend>Etes vous d'accord avec le diagnostic du modèle ?</legend>
+    <!-- Ajouter un bouton pour soumettre le formulaire -->
+    <button type="button" class="oui_val" onclick="yes_validation()">Oui</button>
+    <button type="button" class="non_val" onclick="no_validation()">Non</button>
+    </fieldset>
+</form>
+
+<!-- Ajouter le script JavaScript pour gérer la soumission du formulaire -->
+<!-- Ajouter le script JavaScript pour gérer la soumission du formulaire -->
+<script>
+async function yes_validation() {
+    // Récupérer les valeurs des champs du formulaire
+    const name = document.getElementById('name').value;
+    const age = document.getElementById('age').value;
+    const gender = document.getElementById('gender').value;
+    const fileInput = document.getElementById('radio');
+    const file = fileInput.files[0];
+    const id = document.getElementById('patientId').value;
+
+    const reader = new FileReader();
+
+    reader.onload = async function () {
+        const fileContentBase64 = reader.result.split(',')[1];
+
+        // Construire l'objet avec les données du formulaire
+        const formData = {
+            name: name,
+            age: age,
+            gender: gender,
+            radio: fileContentBase64,
+            statut: "Validé"  // Ajouter le statut de validation du dossier
+        };
+
+        try {
+            const response = await fetch('/add_validation/'+ id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Rediriger vers la vue des patients après l'édition
+                window.location.href = '/view_patients';
+            })
+            .catch(error => console.error('Error:', error));
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    // Read the file content as a Data URL (base64-encoded)
+    reader.readAsDataURL(file);
+
+}
+</script>
+
+</body>
+</html>

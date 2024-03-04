@@ -14,81 +14,29 @@
 <form id="editPatientForm">
     <!-- Ajouter des champs pour éditer les informations du patient -->
     <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required value="{{ patient.name }}">
+    <input type="text" id="name" name="name" required value="{{ patient.name }}" readonly>
     <br>
 
     <label for="age">Age:</label>
-    <input type="number" id="age" name="age" required value="{{ patient.age }}">
+    <input type="number" id="age" name="age" required value="{{ patient.age }}" readonly>
     <br>
 
     <label for="gender">Gender:</label>
-    <select id="gender" name="gender" required>
-        <option value="male" {{ "selected" if patient.gender == "male" else "" }}>Male</option>
-        <option value="female" {{ "selected" if patient.gender == "female" else "" }}>Female</option>
-    </select>
-    <br>
+    <input type="text" id="gender" name="gender" value="{{ patient.gender }}" readonly>
+    <br><br>
+
+    <div>Prédiction : </div><br>
+    <div><b>{{ patient.predict.prediction }}  {{ patient.predict.probabilité }}%</b></div><br>
 
     <!-- Ajouter un champ caché pour stocker l'ID du patient -->
     <input type="hidden" id="patientId" name="patientId" value="{{ patient_id }}">
     <br>
     <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
     <br><br>
-    <a href="#">rapport pdf à charger</a>
+    <button type="button" onclick="window.print()">Imprimer le rapport</button>
     <br><br>
 
-    <!-- Ajouter un bouton pour soumettre le formulaire -->
-    <button type="button" id="submitBtn" onclick="submitForm()">Submit</button>
 </form>
-
-<!-- Ajouter le script JavaScript pour gérer la soumission du formulaire -->
-<!-- Ajouter le script JavaScript pour gérer la soumission du formulaire -->
-<script>
-        async function submitForm() {
-            const name = document.getElementById('name').value;
-            const age = document.getElementById('age').value;
-            const gender = document.getElementById('gender').value;
-            const fileInput = document.getElementById('radio');
-            const file = fileInput.files[0];
-            const id = document.getElementById('patientId').value;
-
-            const reader = new FileReader();
-
-            reader.onload = async function () {
-                const fileContentBase64 = reader.result.split(',')[1];
-
-                // Construire l'objet avec les données du formulaire
-                const formData = {
-                    name: name,
-                    age: age,
-                    gender: gender,
-                    radio: fileContentBase64
-                };
-                
-                try {
-                    const response = await fetch('/view_patient/'+ id, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(formData)
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Rediriger vers la vue des patients après l'édition
-                        window.location.href = '/view_patients';
-                    })
-                    .catch(error => console.error('Error:', error));
-
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            };
-
-            // Read the file content as a Data URL (base64-encoded)
-            reader.readAsDataURL(file);
-
-        }
-</script>
 
 </body>
 </html>

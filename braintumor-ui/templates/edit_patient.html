@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<h1>Edit Patient</h1>
+<h1>Edit Patient {{ patient.name }}</h1>
 
 <form id="editPatientForm">
     <!-- Ajouter des champs pour éditer les informations du patient -->
@@ -31,6 +31,8 @@
     <!-- Ajouter un champ caché pour stocker l'ID du patient -->
     <input type="hidden" id="patientId" name="patientId" value="{{ patient_id }}">
     <br>
+    <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
+    <br><br>
     <input type="file" id="radio">
 
     <!-- Ajouter un bouton pour soumettre le formulaire -->
