@@ -40,7 +40,6 @@ class PatientUpdateModel(BaseModel):
     predict_score: str = None
     predict_label: str = None
 
-
 # Modèles Pydantic pour la visualisation des patients
 class PatientViewModel(BaseModel):
     name: str
@@ -50,7 +49,6 @@ class PatientViewModel(BaseModel):
     radio: str
     predict_score: str = None
     predict_label: str = None
-
 
 
 # Modèle Pydantic pour les prédictions (à adapter selon vos besoins)
@@ -129,6 +127,21 @@ async def view_patient(request: Request, patient_id: str):
     # Récupérer les informations du patient pour affichage dans le formulaire
     patient = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
     return templates.TemplateResponse("view_patient.html", {"request": request, "patient": patient,
+                                                            "patient_id": patient_id})
+
+# Route pour valider le dossier patient
+@app.post("/add_validation/{patient_id}")
+async def add_validation_post(patient_id: str, patient: PatientUpdateModel):
+    # Mettre à jour le statut du patient dans la base de données
+    db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": patient.dict()})
+    return RedirectResponse(url="/view_patients")
+
+# Route pour valider le dossier patient
+@app.get("/add_validation/{patient_id}", response_class=HTMLResponse)
+async def add_validation(request: Request, patient_id: str):
+    # Récupérer les informations du patient pour affichage dans le formulaire
+    patient = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
+    return templates.TemplateResponse("add_validation.html", {"request": request, "patient": patient,
                                                             "patient_id": patient_id})
 
 if __name__ == '__main__':
