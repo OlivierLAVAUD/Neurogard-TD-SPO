@@ -27,10 +27,7 @@ class PatientModel(BaseModel):
     age: int
     gender: str
     radio: str = None
-    predict_score: float = None
-    predict_label: str = None
-    validation: str = ""
-    comment: str = ""
+    predict: object = {}
 
 
 # Modèles Pydantic pour la modification du patient
@@ -39,10 +36,6 @@ class PatientUpdateModel(BaseModel):
     age: int
     gender: str
     radio: str
-    predict_score: float = None
-    predict_label: str = None
-    validation: str = ""
-    comment: str = ""
 
 
 # Modèles Pydantic pour la visualisation des patients
@@ -52,14 +45,9 @@ class PatientViewModel(BaseModel):
     gender: str
     id: str
     radio: str
-    predict_score: float = None
-    predict_label: str = None
-    validation: str = ""
-    comment: str = ""
+    predict: object
 
-class ValidationModel(BaseModel):
-    # Ajoutez les champs nécessaires pour les prédictions
-    comment: str = ""
+
 
 # Modèle Pydantic pour les prédictions (à adapter selon vos besoins)
 class PredictionModel(BaseModel):
@@ -83,15 +71,14 @@ def add_patient(request: Request):
 
 @app.post("/add_patient")
 async def add_patient_post(patient: PatientModel):
-    files = {'file': base64.b64decode(patient.radio)}
-
+    #print(f'patient', patient)
+    files = {'file': ('nom_du_fichier_qui_ne_sert_a_rien.jpg', base64.b64decode(patient.radio))}
     # Make a POST request to the FastAPI endpoint
     response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/predict/', files=files)
     if response.status_code == 200:
+        print(f'responseRAW', response.text)
         print(f'response', json.loads(response.text))
-        response_data = json.loads(response.text)
-        patient.predict_score = round(response_data[0], 3)
-        patient.predict_label = response_data[1]
+        patient.predict = json.loads(response.text)
     else:
         print(f'error', response)
     # Insérer le patient dans la base de données
@@ -104,7 +91,7 @@ async def add_patient_post(patient: PatientModel):
 @app.get("/view_patients", response_class=HTMLResponse)
 async def view_patients(request: Request):
     # Récupérer tous les patients depuis la base de données
-    patients = [PatientViewModel(id=str(patient['_id']), **patient) for patient in db.patients.find().sort('predict_score', -1)]
+    patients = [PatientViewModel(id=str(patient['_id']), **patient) for patient in db.patients.find().sort('predict.probabilité', -1)]
     return templates.TemplateResponse("view_patients.html", {"request": request, "patients": patients})
 
 
@@ -139,24 +126,39 @@ async def view_patient(request: Request, patient_id: str):
     return templates.TemplateResponse("view_patient.html", {"request": request, "patient": patient,
                                                             "patient_id": patient_id})
 
-# Route pour valider le dossier patient
-@app.post("/add_validation/{patient_id}/{validation}")
-async def add_validation_post(patient_id: str, validation: bool, formData: ValidationModel):
-    # Mettre à jour le statut du patient dans la base de données
-    valid = "true" if validation else "false"
-    db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": {"validation": valid, "comment": formData.comment}})
-    if valid == "false":
-        PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
 
-    return RedirectResponse(url="/view_patients")
+'''
+Envoi d'une notification à l'API modèle en cas de divergence :
+implémenter un methode /feedback/ dans l'API du modèle qui s'attend à recevoir:
+- l'image problématique
+- l'avis de l'expert et la prédiction du modèle
+et qui log simplement dans la console
+'''
 
-# Route pour valider le dossier patient
-@app.get("/add_validation/{patient_id}", response_class=HTMLResponse)
-async def add_validation(request: Request, patient_id: str):
-    # Récupérer les informations du patient pour affichage dans le formulaire
-    patient = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
-    return templates.TemplateResponse("add_validation.html", {"request": request, "patient": patient,
-                                                            "patient_id": patient_id})
+# Fonction pour comparer la prédiction du modèle et l'avis de l'expert
+# def comparer_prediction_expert(prediction, avis_expert):
+#     if prediction != avis_expert:
+#         return True
+#     else:
+#         return False
+
+# Fonction pour envoyer un feedback à l'API du modèle en cas de divergence
+print("test")
+divergence = True
+if divergence == True:
+    @app.post("/send_feedback")
+    async def send_feedback(patient.radio, patient.prediction, avis_expert = "NO tumeur"):
+        files = {base64.b64decode(patient.radio)}
+        prediction = patient.prediction
+         #à modifier avec le résultat de la validation
+
+        # Make a POST request to the FastAPI endpoint
+        response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/feedback/', files=files, prediction = prediction, avis_expert = avis_expert)
+        if response.status_code == 200:
+            print(f'response', json.loads(response.text))
+        else:
+            print(f'error', response)
+        return JSONResponse(content={"redirect_url": "/view_patients"})
 
 if __name__ == '__main__':
     uvicorn.run(app, host=HOST, port=PORT_APP)
