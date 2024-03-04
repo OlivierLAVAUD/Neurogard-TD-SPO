@@ -27,7 +27,8 @@ class PatientModel(BaseModel):
     age: int
     gender: str
     radio: str = None
-    predict: object = {}
+    predict_score: str = None
+    predict_label: str = None
 
 
 # Modèles Pydantic pour la modification du patient
@@ -36,6 +37,8 @@ class PatientUpdateModel(BaseModel):
     age: int
     gender: str
     radio: str
+    predict_score: str = None
+    predict_label: str = None
 
 
 # Modèles Pydantic pour la visualisation des patients
@@ -45,7 +48,8 @@ class PatientViewModel(BaseModel):
     gender: str
     id: str
     radio: str
-    predict: object
+    predict_score: str = None
+    predict_label: str = None
 
 
 
@@ -71,14 +75,15 @@ def add_patient(request: Request):
 
 @app.post("/add_patient")
 async def add_patient_post(patient: PatientModel):
-    print(f'patient', patient)
-    files = {'file': ('nom_du_fichier_qui_ne_sert_a_rien.jpg', base64.b64decode(patient.radio))}
+    files = {'file': base64.b64decode(patient.radio)}
     # Make a POST request to the FastAPI endpoint
     response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/predict/', files=files)
     if response.status_code == 200:
         print(f'responseRAW', response.text)
         print(f'response', json.loads(response.text))
-        patient.predict = json.loads(response.text)
+        response_data = json.loads(response.text)
+        patient.predict_score = response_data[0]
+        patient.predict_label = response_data[1]
     else:
         print(f'error', response)
     # Insérer le patient dans la base de données

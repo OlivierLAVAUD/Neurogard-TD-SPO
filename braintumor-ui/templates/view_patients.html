@@ -39,7 +39,7 @@
                         <a href="#">Validation</a>
                     </td>
                     <td><img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image"></td>
-                    <td>{{ patient.predict.prediction }}  {{ patient.predict.probabilité }}%</td>
+                    <td>{{ patient.predict_label}}  {{ patient.predict_score }}</td>
                     <td>{{ patient.statut }}</td>
                     <td>{{ patient.rapport }}</td>
                 </tr>
