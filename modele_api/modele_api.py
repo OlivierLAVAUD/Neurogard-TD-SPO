@@ -101,7 +101,9 @@ async def predict(file: UploadFile):
 
 # Endpoint pour recevoir feedback si divergence entre predict et expert :
 @app.post("/feedback/")
-def take_feedback(image: str, prediction: str, avis_expert: str):
+async def take_feedback(image: str, prediction: str, avis_expert: str):
+    # Lire les données du fichier UploadFile
+    #file = io.BytesIO(await file.read())
     # Logguer les informations reçues
     print(f"Image : {image}, Prediction du modèle : {prediction}, Avis de l'expert : {avis_expert}")
     print("Pour ce scan la prédiction du modele est fausse. Pensez à réentrainer le modèle avec cette image labelisée.")

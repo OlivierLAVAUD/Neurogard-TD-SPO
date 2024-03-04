@@ -85,6 +85,27 @@ async def add_patient_post(patient: PatientModel):
         response_data = json.loads(response.text)
         patient.predict_score = response_data[0]
         patient.predict_label = response_data[1]
+
+        divergence = True
+        predict_label = "NO tumeur"
+        avis_expert = "YES tumeur"
+        if divergence == True:
+            print("test avant post")
+            #file_content = base64.b64decode(patient.radio)
+            #files = {'file': file_content}  # Clé 'file' pour le fichier
+            data_divergence = {
+                "image": patient.radio,
+                "prediction": patient.predict_score,
+                "avis_expert": avis_expert
+            }
+            # Make a POST request to the FastAPI endpoint
+            #response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/feedback/', files=files, json=data_divergence)
+            response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/feedback/', json=data_divergence)
+            if response.status_code == 200:
+                print( "Feedback envoyé avec succès.")
+                print(f'response', json.loads(response.text))
+            else:
+                print(f'error', response)
     else:
         print(f'error', response)
     # Insérer le patient dans la base de données
@@ -141,29 +162,14 @@ et qui log simplement dans la console
 '''
 
 # Fonction pour comparer la prédiction du modèle et l'avis de l'expert
-# def comparer_prediction_expert(prediction, avis_expert):
-#     if prediction != avis_expert:
+# def compare_model_expert(predict_label, avis_expert):
+#     if predict_label != avis_expert:
 #         return True
 #     else:
 #         return False
 
 # Fonction pour envoyer un feedback à l'API du modèle en cas de divergence
-print("test")
-divergence = True
-predict_label = "NO tumeur"
-avis_expert = "YES tumeur"
-if divergence == True:
-    @app.post("/send_feedback")
-    async def send_feedback(patient: PatientUpdateModel):
-        files = {base64.b64decode(patient.radio)}
-        prediction = patient.predict_score
-        # Make a POST request to the FastAPI endpoint
-        response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/feedback/', files=files, prediction=prediction, avis_expert = avis_expert)
-        if response.status_code == 200:
-            print(f'response', json.loads(response.text))
-        else:
-            print(f'error', response)
-        return JSONResponse(content={"redirect_url": "/view_patients"})
+
 
 if __name__ == '__main__':
     uvicorn.run(app, host=HOST, port=PORT_APP)
