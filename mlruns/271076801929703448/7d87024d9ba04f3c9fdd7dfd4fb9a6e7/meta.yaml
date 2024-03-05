@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/271076801929703448/7d87024d9ba04f3c9fdd7dfd4fb9a6e7/artifacts
+end_time: 1709568899490
+entry_point_name: ''
+experiment_id: '271076801929703448'
+lifecycle_stage: active
+run_id: 7d87024d9ba04f3c9fdd7dfd4fb9a6e7
+run_name: brawny-pug-389
+run_uuid: 7d87024d9ba04f3c9fdd7dfd4fb9a6e7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1709568881790
+status: 3
+tags: []
+user_id: Utilisateur
