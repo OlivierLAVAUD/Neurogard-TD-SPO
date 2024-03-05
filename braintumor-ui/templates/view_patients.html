@@ -33,7 +33,7 @@
         </thead>
         <tbody>
             {% for patient in patients %}
-            {% if patient.validation == "" or patient.validation == "false" %}
+            {% if patient.validation == ""  %}
                 <tr>
                     <td>{{ patient.name }}</td>
                     <td>{{ patient.age }}</td>
@@ -71,7 +71,7 @@
         <tbody>
 
             {% for patient in patients %}
-            {% if patient.validation == "true" %}
+            {% if patient.validation == "true" or patient.validation == "false" %}
             <tr>
             <tr>
                 <td>{{ patient.name }}</td>
