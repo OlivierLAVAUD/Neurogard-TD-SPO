@@ -2,6 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,6 +10,7 @@
     <title>Add Patient</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='styles.css') }}">
 </head>
+
 <body>
 
     <h1>Add Patient</h1>
@@ -35,26 +37,14 @@
     <!-- Ajoutez ceci à votre fichier add_patient.html -->
     <script>
 
-        async function submitForm() {
-            const name = document.getElementById('name').value;
-            const age = document.getElementById('age').value;
-            const gender = document.getElementById('gender').value;
-            const fileInput = document.getElementById('radio');
-            const file = fileInput.files[0];
-
-            const reader = new FileReader();
-
-            reader.onload = async function () {
-                const fileContentBase64 = reader.result.split(',')[1];
-
-                // Construire l'objet avec les données du formulaire
-                const formData = {
+        async function postData(name, age, gender, radio) {
+            const formData = {
                     name: name,
                     age: age,
                     gender: gender,
-                    radio: fileContentBase64
+                    radio: radio
                 };
-                
+
                 try {
                     const response = await fetch('/add_patient', {
                         method: 'POST',
@@ -73,10 +63,25 @@
                 } catch (error) {
                     console.error('Error:', error);
                 }
-            };
+        }
 
-            // Read the file content as a Data URL (base64-encoded)
-            reader.readAsDataURL(file);
+        async function submitForm() {
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+            const fileInput = document.getElementById('radio');
+            const file = fileInput.files[0];
+            
+            if (file != undefined) {      
+                const reader = new FileReader();         
+                reader.onload = async function () {
+                    const radio = reader.result.split(',')[1];
+                    postData(name, age, gender, radio);
+                }
+                await reader.readAsDataURL(file);
+            } else {
+                postData(name, age, gender, "");
+            }
 
         }
     </script>
@@ -84,4 +89,5 @@
 
 
 </body>
+
 </html>

@@ -26,9 +26,9 @@ class PatientModel(BaseModel):
     name: str
     age: int
     gender: str
-    radio: str = None
-    predict_score: float = None
-    predict_label: str = None
+    radio: str = ""
+    predict_score: float = 0.0
+    predict_label: str = ""
     validation: str = ""
     comment: str = ""
 
@@ -38,9 +38,9 @@ class PatientUpdateModel(BaseModel):
     name: str
     age: int
     gender: str
-    radio: str
-    predict_score: float = None
-    predict_label: str = None
+    radio: str = ""
+    predict_score: float = 0.0
+    predict_label: str = ""
     validation: str = ""
     comment: str = ""
 
@@ -51,9 +51,9 @@ class PatientViewModel(BaseModel):
     age: int
     gender: str
     id: str
-    radio: str
-    predict_score: float = None
-    predict_label: str = None
+    radio: str = ""
+    predict_score: float = 0.0
+    predict_label: str = ""
     validation: str = ""
     comment: str = ""
 
@@ -83,16 +83,17 @@ def add_patient(request: Request):
 
 @app.post("/add_patient")
 async def add_patient_post(patient: PatientModel):
-    files = {'file': base64.b64decode(patient.radio)}
-    # Make a POST request to the FastAPI endpoint
-    response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/predict/', files=files)
-    if response.status_code == 200:
-        print(f'response', json.loads(response.text))
-        response_data = json.loads(response.text)
-        patient.predict_score = round(response_data[0], 3)
-        patient.predict_label = response_data[1]
-    else:
-        print(f'error', response)
+    if patient.radio != "":
+        files = {'file': base64.b64decode(patient.radio)}
+        # Make a POST request to the FastAPI endpoint
+        response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/predict/', files=files)
+        if response.status_code == 200:
+            print(f'response', json.loads(response.text))
+            response_data = json.loads(response.text)
+            patient.predict_score = round(response_data[0], 3)
+            patient.predict_label = response_data[1]
+        else:
+            print(f'error', response)
     # Insérer le patient dans la base de données
     patient_data = patient.dict()
     db.patients.insert_one(patient_data)
@@ -119,6 +120,17 @@ async def edit_patient(request: Request, patient_id: str):
 
 @app.post("/edit_patient/{patient_id}")
 async def edit_patient_post(patient_id: str, patient: PatientUpdateModel):
+    if patient.radio != "":
+        files = {'file': base64.b64decode(patient.radio)}
+        # Make a POST request to the FastAPI endpoint
+        response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/predict/', files=files)
+        if response.status_code == 200:
+            print(f'response', json.loads(response.text))
+            response_data = json.loads(response.text)
+            patient.predict_score = round(response_data[0], 3)
+            patient.predict_label = response_data[1]
+        else:
+            print(f'error', response)
     # Mettre à jour le patient dans la base de données
     db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": patient.model_dump()})
     return RedirectResponse(url="/view_patients")
