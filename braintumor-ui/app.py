@@ -145,12 +145,8 @@ async def add_validation_post(patient_id: str, validation: bool, formData: Valid
     valid = "true" if validation else "false"
     db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": {"validation": valid, "comment": formData.comment}})
     if valid == "false":
-        patient = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
-        requests.post(f'http://{HOST}:{PORT_API_MODEL}/feedback/',
-                       json = { "file" : patient.radio, 
-                               "comment": patient.comment, 
-                               "predict_score": patient.predict_score 
-                               })
+        PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
+
     return RedirectResponse(url="/view_patients")
 
 # Route pour valider le dossier patient
