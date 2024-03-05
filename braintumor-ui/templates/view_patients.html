@@ -26,12 +26,14 @@
                 <th>Action</th>
                 <th>Image</th>
                 <th>Prediction</th>
+                <th>validation</th>
                 <th>Statut</th>
                 <th>Rapport</th>
             </tr>
         </thead>
         <tbody>
             {% for patient in patients %}
+            {% if patient.validation == "" or patient.validation == "false" %}
                 <tr>
                     <td>{{ patient.name }}</td>
                     <td>{{ patient.age }}</td>
@@ -43,10 +45,11 @@
                     </td>
                     <td><img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image"></td>
                     <td>{{ patient.predict_label}}  {{ patient.predict_score }}</td>
-                    <td>{{ patient.statut }}</td>
+                    <td>{{ patient.validation }}</td>
+                    <td>{{ patient.statut }} </td>
                     <td>{{ patient.rapport }}</td>
                 </tr>
-
+            {% endif %}
             {% endfor %}
         </tbody>
     </table>
@@ -61,14 +64,14 @@
                 <th>Action</th>
                 <th>Image</th>
                 <th>Prediction</th>
-                <th>Statut</th>
+                <th>validation</th>
                 <th>Rapport</th>
             </tr>
         </thead>
         <tbody>
 
             {% for patient in patients %}
-            {% if patient.statut == "Validé" %}
+            {% if patient.validation == "true" %}
             <tr>
             <tr>
                 <td>{{ patient.name }}</td>
@@ -80,8 +83,8 @@
                     <a href="{{ url_for('add_validation', patient_id=patient.id) }}">Validation</a>
                 </td>
                 <td><img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image"></td>
-                <td>{{ patient.predict.prediction }} {{ patient.predict.probabilité }}%</td>
-                <td>{{ patient.statut }}</td>
+                <td>{{ patient.predict_label}}  {{ patient.predict_score }}%</td>
+                <td>{{ patient.validation }}</td>
                 <td>{{ patient.rapport }}</td>
             </tr>
             </tr>
