@@ -9,6 +9,9 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Disable GPU usage for TensorFlow
 from PIL import Image
 import io
 
+
+
+
 import sys
 sys.path.append('../')
 from config import MLFLOW_SERVER, MLFLOW_MODEL_RUNS, HOST, PORT_API_MODEL
