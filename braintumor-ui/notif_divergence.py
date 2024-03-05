@@ -85,32 +85,33 @@ async def add_patient_post(patient: PatientModel):
         response_data = json.loads(response.text)
         patient.predict_score = response_data[0]
         patient.predict_label = response_data[1]
-
-        divergence = True
-        predict_label = "NO tumeur"
-        avis_expert = "YES tumeur"
-        if divergence == True:
-            print("test avant post")
-            #file_content = base64.b64decode(patient.radio)
-            #files = {'file': file_content}  # Clé 'file' pour le fichier
-            data_divergence = {
-                "image": patient.radio,
-                "prediction": patient.predict_score,
-                "avis_expert": avis_expert
-            }
-            # Make a POST request to the FastAPI endpoint
-            #response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/feedback/', files=files, json=data_divergence)
-            response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/feedback/', json=data_divergence)
-            if response.status_code == 200:
-                print( "Feedback envoyé avec succès.")
-                print(f'response', json.loads(response.text))
-            else:
-                print(f'error', response)
     else:
         print(f'error', response)
     # Insérer le patient dans la base de données
     patient_data = patient.dict()
     db.patients.insert_one(patient_data)
+
+'''
+Envoi d'une notification à l'API modèle en cas de divergence :
+implémenter un methode /feedback/ dans l'API du modèle qui s'attend à recevoir:
+- l'image problématique
+- l'avis de l'expert et la prédiction du modèle
+et qui log simplement dans la console
+'''
+
+    divergence = True
+    avis_expert = "YES tumeur"
+    if divergence == True:
+        data_divergence = {'image': patient_data['radio'],
+                   'prediction': patient_data['predict_score'],
+                   'avis_expert': avis_expert}
+        # Make a POST request to the FastAPI endpoint
+        response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/feedback/', json=data_divergence)
+        if response.status_code == 200:
+            print( "Feedback envoyé avec succès.")
+            print(f'response', json.loads(response.text))
+        else:
+            print(f'error', response)
     return JSONResponse(content={"redirect_url": "/view_patients"})
 
 
@@ -153,13 +154,7 @@ async def view_patient(request: Request, patient_id: str):
     return templates.TemplateResponse("view_patient.html", {"request": request, "patient": patient,
                                                             "patient_id": patient_id})
 
-'''
-Envoi d'une notification à l'API modèle en cas de divergence :
-implémenter un methode /feedback/ dans l'API du modèle qui s'attend à recevoir:
-- l'image problématique
-- l'avis de l'expert et la prédiction du modèle
-et qui log simplement dans la console
-'''
+
 
 # Fonction pour comparer la prédiction du modèle et l'avis de l'expert
 # def compare_model_expert(predict_label, avis_expert):
