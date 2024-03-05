@@ -80,7 +80,6 @@ async def add_patient_post(patient: PatientModel):
     # Make a POST request to the FastAPI endpoint
     response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/predict/', files=files)
     if response.status_code == 200:
-        print(f'responseRAW', response.text)
         print(f'response', json.loads(response.text))
         response_data = json.loads(response.text)
         patient.predict_score = response_data[0]
@@ -91,14 +90,7 @@ async def add_patient_post(patient: PatientModel):
     patient_data = patient.dict()
     db.patients.insert_one(patient_data)
 
-'''
-Envoi d'une notification à l'API modèle en cas de divergence :
-implémenter un methode /feedback/ dans l'API du modèle qui s'attend à recevoir:
-- l'image problématique
-- l'avis de l'expert et la prédiction du modèle
-et qui log simplement dans la console
-'''
-
+    #Envoi d'une notification à l'API modèle en cas de divergence :
     divergence = True
     avis_expert = "YES tumeur"
     if divergence == True:
@@ -109,7 +101,7 @@ et qui log simplement dans la console
         response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/feedback/', json=data_divergence)
         if response.status_code == 200:
             print( "Feedback envoyé avec succès.")
-            print(f'response', json.loads(response.text))
+            print(f'API modèle :', json.loads(response.text))
         else:
             print(f'error', response)
     return JSONResponse(content={"redirect_url": "/view_patients"})
@@ -132,7 +124,6 @@ async def edit_patient(request: Request, patient_id: str):
                                                             "patient_id": patient_id})
 
 
-
 @app.post("/edit_patient/{patient_id}")
 async def edit_patient_post(patient_id: str, patient: PatientUpdateModel):
     # Mettre à jour le patient dans la base de données
@@ -153,17 +144,6 @@ async def view_patient(request: Request, patient_id: str):
     patient = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
     return templates.TemplateResponse("view_patient.html", {"request": request, "patient": patient,
                                                             "patient_id": patient_id})
-
-
-
-# Fonction pour comparer la prédiction du modèle et l'avis de l'expert
-# def compare_model_expert(predict_label, avis_expert):
-#     if predict_label != avis_expert:
-#         return True
-#     else:
-#         return False
-
-# Fonction pour envoyer un feedback à l'API du modèle en cas de divergence
 
 
 if __name__ == '__main__':

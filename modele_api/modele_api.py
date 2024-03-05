@@ -105,6 +105,9 @@ class FeedbackData(BaseModel):
     avis_expert: str
 
 # Endpoint pour recevoir feedback si divergence entre predict et expert :
+# avec l'image problématique, l'avis de l'expert, la prédiction du modèle
+# log simplement dans la console
+
 @app.post("/feedback/")
 async def take_feedback(feedback_data: FeedbackData):
     # Logguer les informations reçues
