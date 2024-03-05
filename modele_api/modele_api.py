@@ -8,6 +8,7 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Disable GPU usage for TensorFlow
 from PIL import Image
 import io
+from pydantic import BaseModel
 
 
 
@@ -26,20 +27,6 @@ logged_model = MLFLOW_MODEL_RUNS
 loaded_model = mlflow.pyfunc.load_model(logged_model)
 print(loaded_model)
 
-
-# Fonction pour normaliser une image
-# def normalize_image(image):
-#     # Convertir l'image en niveaux de gris
-#     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-#     # Redimensionner l'image à une taille fixe (si nécessaire)
-#     resized_image = cv2.resize(gray_image, (224, 224))
-#     # Convertir l'image en niveaux de gris en une image avec trois canaux de couleur
-#     color_image = cv2.cvtColor(resized_image, cv2.COLOR_GRAY2RGB)
-#     # Normaliser les valeurs de pixel pour être dans la plage [0, 1]
-#     normalized_image = color_image / 255.0
-#     # Remodeler l'image pour être dans le format attendu par le modèle
-#     normalized_image = np.expand_dims(normalized_image, axis=0)
-#     return normalized_image
 
 def normalize_image(img, target_size):
     if len(img.shape) == 3:
@@ -90,24 +77,7 @@ configure_cors(app)
 @app.post("/predict/")
 
 async def predict(file: UploadFile):
-    # # Lire l'image depuis le fichier téléchargé
-    # contents = await file.read()
-    # nparr = np.frombuffer(contents, np.uint8)
-    # image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    
-    # # Normaliser l'image
-    # # target_size = (224, 224)
-    # normalized_image = normalize_image(image)
-    
-    # # Faire une prédiction avec le modèle
-    # prediction = loaded_model.predict(normalized_image)
-    # print(prediction)
-    # # Retourner la prédiction
-    # prediction_result = prediction.tolist()  # Si result est un tableau numpy
-    # print(prediction_result)
-    # return {"prediction": prediction_result}
-        # Lire les données du fichier UploadFile
-        # contents = await file.read()
+
         # Convertir les données en un objet image avec PIL
         file = io.BytesIO(await file.read())
         image = Image.open(file)
