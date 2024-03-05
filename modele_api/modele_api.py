@@ -4,8 +4,6 @@ import uvicorn
 import mlflow
 import numpy as np
 import cv2
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Disable GPU usage for TensorFlow
 from PIL import Image
 import io
 from pydantic import BaseModel
@@ -16,6 +14,9 @@ from pydantic import BaseModel
 import sys
 sys.path.append('../')
 from config import MLFLOW_SERVER, MLFLOW_MODEL_RUNS, HOST, PORT_API_MODEL
+
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Disable GPU usage for TensorFlow
 
 mlflow.set_tracking_uri(uri=MLFLOW_SERVER)
 
@@ -77,9 +78,9 @@ configure_cors(app)
 @app.post("/predict/")
 
 async def predict(file: UploadFile):
-
-        # Convertir les données en un objet image avec PIL
+        # Lire les données du fichier UploadFile
         file = io.BytesIO(await file.read())
+        # Convertir les données en un objet image avec PIL
         image = Image.open(file)
         X_img = np.array(image)
         
@@ -97,6 +98,22 @@ async def predict(file: UploadFile):
             label = 'Tumeur YES'
         return tumor_probability, label
 
+
+class FeedbackData(BaseModel):
+    image: str
+    prediction: str
+    avis_expert: str
+
+# Endpoint pour recevoir feedback si divergence entre predict et expert :
+# avec l'image problématique, l'avis de l'expert, la prédiction du modèle
+# log simplement dans la console
+
+@app.post("/feedback/")
+async def take_feedback(feedback_data: FeedbackData):
+    # Logguer les informations reçues
+    print(f"Image : {feedback_data.image}, Prediction du modèle : {feedback_data.prediction}, Avis de l'expert : {feedback_data.avis_expert}")
+    print("Pour ce scan la prédiction du modele est fausse. Pensez à réentrainer le modèle avec cette image labelisée.")
+    return {"message": "Feedback reçu avec succès."}
 
 if __name__ == "__main__":
     uvicorn.run(app, host=HOST, port=PORT_API_MODEL)

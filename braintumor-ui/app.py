@@ -87,6 +87,7 @@ def add_patient(request: Request):
 @app.post("/add_patient")
 async def add_patient_post(patient: PatientModel):
     files = {'file': base64.b64decode(patient.radio)}
+
     # Make a POST request to the FastAPI endpoint
     response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/predict/', files=files)
     if response.status_code == 200:
@@ -148,8 +149,21 @@ async def add_validation_post(patient_id: str, validation: bool, formData: Valid
 
     db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": {"validation": valid, "status": status "comment": formData.comment}})
     if valid == "false":
-        PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
-  
+
+        patient_data = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
+        
+        #Envoi d'une notification à l'API modèle en cas de divergence :
+        data_divergence = {'image': patient_data.radio,
+                   'prediction': patient_data.predict_score,
+                   'avis_expert': patient_data.comment}
+        # Make a POST request to the FastAPI endpoint
+        response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/feedback/', json=data_divergence)
+        if response.status_code == 200:
+            print( "Feedback envoyé avec succès.")
+            print(f'API modèle :', json.loads(response.text))
+        else:
+            print(f'error', response)
+
 
     return RedirectResponse(url="/view_patients")
 
