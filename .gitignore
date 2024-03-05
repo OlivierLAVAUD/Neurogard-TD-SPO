@@ -1,8 +1,19 @@
-# fichiers ignorés
+# Répertoires
 __pycache__/
-.jpeg
-.jpg
-/data
+data/
+mlruns/
+mlartifacts/
+
+# Images
+**/*.jpg
+**/*.jpeg
+
+# Modèles
+**/*.pb
+**/*.keras
+**/*.h5
+
+# Divers
 config.py
-
-
+.ipynb_checkpoints
+.DS_Store
