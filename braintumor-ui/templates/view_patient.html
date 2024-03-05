@@ -26,7 +26,7 @@
     <br><br>
 
     <div>Prédiction : </div><br>
-    <div><b>{{ patient.predict.prediction }}  {{ patient.predict.probabilité }}%</b></div><br>
+    <div><b>{{ patient.predict_label}}  {{ patient.predict_score }}%</b></div><br>
 
     <!-- Ajouter un champ caché pour stocker l'ID du patient -->
     <input type="hidden" id="patientId" name="patientId" value="{{ patient_id }}">
