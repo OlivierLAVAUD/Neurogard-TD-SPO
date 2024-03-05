@@ -8,6 +8,7 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Disable GPU usage for TensorFlow
 from PIL import Image
 import io
+from pydantic import BaseModel
 
 
 
@@ -84,6 +85,20 @@ def configure_cors(app):
         allow_headers=["*"],  # Autorise tous les en-têtes
     )
 configure_cors(app)
+
+# Route feedback
+
+class Feedback(BaseModel):
+    # Ajoutez les champs nécessaires pour les prédictions
+    file: str = ""
+    comment: str = ""
+    predict_score: float = None
+
+@app.post("/feedback/")
+
+async def feedback(data: Feedback):
+    print(data)
+    # print(file, comment, predict_score)
 
 
 # Route pour effectuer des prédictions

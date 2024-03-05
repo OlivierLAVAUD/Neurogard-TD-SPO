@@ -27,8 +27,10 @@ class PatientModel(BaseModel):
     age: int
     gender: str
     radio: str = None
-    predict_score: str = None
+    predict_score: float = None
     predict_label: str = None
+    validation: str = ""
+    comment: str = ""
 
 
 # Modèles Pydantic pour la modification du patient
@@ -37,8 +39,11 @@ class PatientUpdateModel(BaseModel):
     age: int
     gender: str
     radio: str
-    predict_score: str = None
+    predict_score: float = None
     predict_label: str = None
+    validation: str = ""
+    comment: str = ""
+
 
 # Modèles Pydantic pour la visualisation des patients
 class PatientViewModel(BaseModel):
@@ -47,9 +52,14 @@ class PatientViewModel(BaseModel):
     gender: str
     id: str
     radio: str
-    predict_score: str = None
+    predict_score: float = None
     predict_label: str = None
+    validation: str = ""
+    comment: str = ""
 
+class ValidationModel(BaseModel):
+    # Ajoutez les champs nécessaires pour les prédictions
+    comment: str = ""
 
 # Modèle Pydantic pour les prédictions (à adapter selon vos besoins)
 class PredictionModel(BaseModel):
@@ -79,7 +89,7 @@ async def add_patient_post(patient: PatientModel):
     if response.status_code == 200:
         print(f'response', json.loads(response.text))
         response_data = json.loads(response.text)
-        patient.predict_score = response_data[0]
+        patient.predict_score = round(response_data[0], 3)
         patient.predict_label = response_data[1]
     else:
         print(f'error', response)
@@ -129,10 +139,18 @@ async def view_patient(request: Request, patient_id: str):
                                                             "patient_id": patient_id})
 
 # Route pour valider le dossier patient
-@app.post("/add_validation/{patient_id}")
-async def add_validation_post(patient_id: str, patient: PatientUpdateModel):
+@app.post("/add_validation/{patient_id}/{validation}")
+async def add_validation_post(patient_id: str, validation: bool, formData: ValidationModel):
     # Mettre à jour le statut du patient dans la base de données
-    db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": patient.dict()})
+    valid = "true" if validation else "false"
+    db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": {"validation": valid, "comment": formData.comment}})
+    if valid == "false":
+        patient = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
+        requests.post(f'http://{HOST}:{PORT_API_MODEL}/feedback/',
+                       json = { "file" : patient.radio, 
+                               "comment": patient.comment, 
+                               "predict_score": patient.predict_score 
+                               })
     return RedirectResponse(url="/view_patients")
 
 # Route pour valider le dossier patient
