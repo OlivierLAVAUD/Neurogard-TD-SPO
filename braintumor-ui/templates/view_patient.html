@@ -33,10 +33,18 @@
     <br>
     <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
     <br><br>
-    <button type="button" onclick="window.print()">Imprimer le rapport</button>
+    <button type="button" onclick="printdDoc()">Imprimer le rapport</button>
     <br><br>
 
 </form>
+<script>
+    async function printDoc() {
+        const status = document.getElementById('status').value
+        if (status == 2) {window.print()} 
+    return
+        };
+</script>
+
 
 </body>
 </html>

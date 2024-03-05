@@ -31,6 +31,7 @@ class PatientModel(BaseModel):
     predict_label: str = None
     validation: str = ""
     comment: str = ""
+    status: int = 0
 
 
 # Modèles Pydantic pour la modification du patient
@@ -43,6 +44,7 @@ class PatientUpdateModel(BaseModel):
     predict_label: str = None
     validation: str = ""
     comment: str = ""
+    status: int = 0
 
 
 # Modèles Pydantic pour la visualisation des patients
@@ -56,6 +58,7 @@ class PatientViewModel(BaseModel):
     predict_label: str = None
     validation: str = ""
     comment: str = ""
+    status: int = 0
 
 class ValidationModel(BaseModel):
     # Ajoutez les champs nécessaires pour les prédictions
@@ -115,8 +118,6 @@ async def edit_patient(request: Request, patient_id: str):
     return templates.TemplateResponse("edit_patient.html", {"request": request, "patient": patient,
                                                             "patient_id": patient_id})
 
-
-
 @app.post("/edit_patient/{patient_id}")
 async def edit_patient_post(patient_id: str, patient: PatientUpdateModel):
     # Mettre à jour le patient dans la base de données
@@ -143,9 +144,12 @@ async def view_patient(request: Request, patient_id: str):
 async def add_validation_post(patient_id: str, validation: bool, formData: ValidationModel):
     # Mettre à jour le statut du patient dans la base de données
     valid = "true" if validation else "false"
-    db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": {"validation": valid, "comment": formData.comment}})
+    if validation: status = 2
+
+    db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": {"validation": valid, "status": status "comment": formData.comment}})
     if valid == "false":
         PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
+  
 
     return RedirectResponse(url="/view_patients")
 
