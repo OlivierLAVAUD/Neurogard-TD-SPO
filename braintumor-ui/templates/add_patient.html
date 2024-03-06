@@ -43,7 +43,31 @@
             status = 1 ;
         };
 
-        async function postData(name, age, gender, radio) {
+        
+
+        async function submitForm() {
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+            const fileInput = document.getElementById('radio');
+            const file = fileInput.files[0];
+            const status = document.getElementById('status');
+            const url = '/add_patient';
+            
+            if (file != undefined) {      
+                const reader = new FileReader();         
+                reader.onload = async function () {
+                    const radio = reader.result.split(',')[1];
+                    postData(name, age, gender, radio, url);
+                }
+                await reader.readAsDataURL(file);
+            } else {
+                postData(name, age, gender, "", url);
+            }
+
+        }
+
+        async function postData(name, age, gender, radio, url) {
             const formData = {
                     name: name,
                     age: age,
@@ -53,7 +77,7 @@
                 };
 
                 try {
-                    const response = await fetch('/add_patient', {
+                    const response = await fetch(url, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -70,28 +94,6 @@
                 } catch (error) {
                     console.error('Error:', error);
                 }
-        }
-
-        async function submitForm() {
-            const name = document.getElementById('name').value;
-            const age = document.getElementById('age').value;
-            const gender = document.getElementById('gender').value;
-            const fileInput = document.getElementById('radio');
-            const file = fileInput.files[0];
-            const status = document.getElementById('status');
-
-            
-            if (file != undefined) {      
-                const reader = new FileReader();         
-                reader.onload = async function () {
-                    const radio = reader.result.split(',')[1];
-                    postData(name, age, gender, radio);
-                }
-                await reader.readAsDataURL(file);
-            } else {
-                postData(name, age, gender, "");
-            }
-
         }
     </script>
 

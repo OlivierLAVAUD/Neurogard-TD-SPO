@@ -1,7 +1,7 @@
 import base64
 import requests
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
@@ -186,6 +186,17 @@ async def add_validation(request: Request, patient_id: str):
     patient = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
     return templates.TemplateResponse("add_validation.html", {"request": request, "patient": patient,
                                                             "patient_id": patient_id})
+
+# Route pour supprimer un patient
+@app.post("/delete_patient/{patient_id}")
+async def delete_patient(patient_id: str):
+    # Vérifiez si le patient existe
+    patient = db.patients.find_one({"_id": ObjectId(patient_id)})
+    if patient is None:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    # Supprimez le patient de la base de données
+    db.patients.delete_one({"_id": ObjectId(patient_id)})
+    return {"message": "Patient deleted successfully"}
 
 if __name__ == '__main__':
     uvicorn.run(app, host=HOST, port=PORT_APP)
