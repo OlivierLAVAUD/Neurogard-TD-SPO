@@ -56,8 +56,21 @@ button:hover {
     background-color: #45a049;
 }
 
+/* Ajoutez du CSS pour les styles personnalisés */
+.table-container {
+    display: flex; /* Utilisez un conteneur flex pour aligner les tables côte à côte */
+    margin-top: 20px;
+}
+
+.table-container table {
+    margin-right: 20px; /* Ajoutez une marge entre les tables */
+}
+
 table {
-    width: 100%;
+    /* width: 100%; */
+    width: auto;
+    table-layout: auto; /* Adapter la largeur des colonnes au contenu */
+    max-width: 50%; /* Définir une largeur maximale pour la table */
     border-collapse: collapse;
     margin-top: 20px;
 }
@@ -66,6 +79,8 @@ th, td {
     padding: 12px 15px;
     border: 1px solid #ddd;
     text-align: left;
+    /* Supprimer la largeur fixe des cellules pour permettre l'adaptation au contenu */
+    width: auto;
 }
 
 th {

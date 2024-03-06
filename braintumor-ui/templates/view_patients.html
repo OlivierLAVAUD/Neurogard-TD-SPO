@@ -1,5 +1,3 @@
-<!-- view_patients.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,83 +14,107 @@
 
     <a href="{{ url_for('add_patient') }}">Add Patient</a>
 
+    <h2>Dossiers en attente de scanner</h2>
     <table border="1">
-        <h2>Dossier en attente de validation</h2>
         <thead>
             <tr>
                 <th>Name</th>
                 <th>Age</th>
                 <th>Gender</th>
                 <th>Action</th>
-                <th>Image</th>
-                <th>Prediction</th>
-                <th>validation</th>
-                <th>Statut</th>
-                <th>Rapport</th>
             </tr>
         </thead>
         <tbody>
             {% for patient in patients %}
-            {% if patient.validation == ""  %}
+            {% if patient.status == 0 and patient.radio == "" %} <!-- a modifier en status == 0 lorsque ce statut sera operationnel-->
                 <tr>
                     <td>{{ patient.name }}</td>
                     <td>{{ patient.age }}</td>
                     <td>{{ patient.gender }}</td>
                     <td>
                         <a href="{{ url_for('edit_patient', patient_id=patient.id) }}">Edit</a><br>
-                        <a href="{{ url_for('view_patient', patient_id=patient.id) }}">Voir patient</a><br>
-                        <a href="{{ url_for('add_validation', patient_id=patient.id) }}">Validation</a>
                     </td>
-                    <td><img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image"></td>
-                    <td>{{ patient.predict_label}}  {{ patient.predict_score }}</td>
-                    <td>{{ patient.validation }}</td>
-                    <td>{{ patient.statut }} </td>
-                    <td>{{ patient.rapport }}</td>
                 </tr>
             {% endif %}
             {% endfor %}
         </tbody>
     </table>
+    <div class="table-container">
+        <div>
+            <h2>Dossiers en attente de confirmation expert médical</h2>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Action</th>
+                        <th>Image</th>
+                        <th>Prediction IA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for patient in patients %}
+                    {% if patient.status == 0 and patient.radio != "" %} <!-- a modifier en status == 1 lorsque ce statut sera operationnel-->
+                        <tr>
+                            <td>{{ patient.name }}</td>
+                            <td>{{ patient.age }}</td>
+                            <td>{{ patient.gender }}</td>
+                            <td>
+                                <a href="{{ url_for('edit_patient', patient_id=patient.id) }}">Edit</a><br>
+                                <a href="{{ url_for('view_patient', patient_id=patient.id) }}">Voir patient</a><br>
+                                <a href="{{ url_for('add_validation', patient_id=patient.id) }}">Validation</a>
+                            </td>
+                            <td><img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image"></td>
+                            <td>{{ patient.predict_label}}  {{ patient.predict_score *100 }}%</td>
+                        </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <h2>Dossiers expertisés</h2>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Action</th>
+                        <th>Image</th>
+                        <th>Prediction IA</th>
+                        <th>Convergence IA/Expert</th>
+                        <th>Rapport</th>
+                    </tr>
+                </thead>
+                <tbody>
 
-    <table border="1">
-        <h2>Dossier validé</h2>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Age</th>
-                <th>Gender</th>
-                <th>Action</th>
-                <th>Image</th>
-                <th>Prediction</th>
-                <th>validation</th>
-                <th>Rapport</th>
-            </tr>
-        </thead>
-        <tbody>
+                    {% for patient in patients %}
+                    {% if patient.status == 2 %}
+                    <tr>
+                    <tr>
+                        <td>{{ patient.name }}</td>
+                        <td>{{ patient.age }}</td>
+                        <td>{{ patient.gender }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_patient', patient_id=patient.id) }}">Edit</a><br>
+                            <a href="{{ url_for('view_patient', patient_id=patient.id) }}">Voir patient</a><br>
+                            <a href="{{ url_for('add_validation', patient_id=patient.id) }}">Validation</a>
+                        </td>
+                        <td><img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image"></td>
+                        <td>{{ patient.predict_label}}  {{ patient.predict_score *100 }}%</td>
+                        <td>{{ patient.validation }}</td>
+                        <td>{{ patient.rapport }}</td>
+                    </tr>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
 
-            {% for patient in patients %}
-            {% if patient.validation == "true" or patient.validation == "false" %}
-            <tr>
-            <tr>
-                <td>{{ patient.name }}</td>
-                <td>{{ patient.age }}</td>
-                <td>{{ patient.gender }}</td>
-                <td>
-                    <a href="{{ url_for('edit_patient', patient_id=patient.id) }}">Edit</a><br>
-                    <a href="{{ url_for('view_patient', patient_id=patient.id) }}">Voir patient</a><br>
-                    <a href="{{ url_for('add_validation', patient_id=patient.id) }}">Validation</a>
-                </td>
-                <td><img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image"></td>
-                <td>{{ patient.predict_label}}  {{ patient.predict_score }}%</td>
-                <td>{{ patient.validation }}</td>
-                <td>{{ patient.rapport }}</td>
-            </tr>
-            </tr>
-            {% endif %}
-            {% endfor %}
-
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        </div>
+    </div>       
 </body>
 
 </html>
