@@ -56,7 +56,7 @@
         </thead>
         <tbody>
             {% for patient in patients %}
-            {% if patient.status == 0  %}
+            {% if patient.status == 0  %} <!-- a modifier en status == 1 lorsque ce statut sera operationnel-->
                 <tr>
                     <td>{{ patient.name }}</td>
                     <td>{{ patient.age }}</td>
@@ -91,7 +91,7 @@
         <tbody>
 
             {% for patient in patients %}
-            {% if patient.validation == "true" or patient.validation == "false" %}
+            {% if patient.status == 2 %}
             <tr>
             <tr>
                 <td>{{ patient.name }}</td>
