@@ -56,6 +56,16 @@ button:hover {
     background-color: #45a049;
 }
 
+/* Ajoutez du CSS pour les styles personnalisés */
+.table-container {
+    display: flex; /* Utilisez un conteneur flex pour aligner les tables côte à côte */
+    margin-top: 20px;
+}
+
+.table-container table {
+    margin-right: 20px; /* Ajoutez une marge entre les tables */
+}
+
 table {
     /* width: 100%; */
     width: auto;
