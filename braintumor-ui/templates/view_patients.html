@@ -26,7 +26,7 @@
         </thead>
         <tbody>
             {% for patient in patients %}
-            {% if patient.status == 0  %}
+            {% if patient.status == 0 and patient.radio == "" %} <!-- a modifier en status == 0 lorsque ce statut sera operationnel-->
                 <tr>
                     <td>{{ patient.name }}</td>
                     <td>{{ patient.age }}</td>
@@ -55,7 +55,7 @@
                 </thead>
                 <tbody>
                     {% for patient in patients %}
-                    {% if patient.status == 0  %} <!-- a modifier en status == 1 lorsque ce statut sera operationnel-->
+                    {% if patient.status == 0 and patient.radio != "" %} <!-- a modifier en status == 1 lorsque ce statut sera operationnel-->
                         <tr>
                             <td>{{ patient.name }}</td>
                             <td>{{ patient.age }}</td>
