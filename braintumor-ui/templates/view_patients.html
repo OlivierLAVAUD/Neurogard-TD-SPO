@@ -66,7 +66,7 @@
                                 <a href="{{ url_for('add_validation', patient_id=patient.id) }}">Validation</a>
                             </td>
                             <td><img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image"></td>
-                            <td>{{ patient.predict_label}}  {{ patient.predict_score *100 }}%</td>
+                            <td>{{ patient.predict_label}}  {{ '%.1f' % (patient.predict_score * 100) }}%</td>
                         </tr>
                     {% endif %}
                     {% endfor %}
@@ -103,7 +103,7 @@
                             <a href="{{ url_for('add_validation', patient_id=patient.id) }}">Validation</a>
                         </td>
                         <td><img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image"></td>
-                        <td>{{ patient.predict_label}}  {{ patient.predict_score *100 }}%</td>
+                        <td>{{ patient.predict_label}}  {{ '%.1f' % (patient.predict_score * 100) }}%</td>
                         <td>{{ patient.validation }}</td>
                         <td>{{ patient.rapport }}</td>
                     </tr>
