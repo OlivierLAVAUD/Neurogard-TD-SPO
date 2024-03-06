@@ -17,7 +17,7 @@
     <a href="{{ url_for('add_patient') }}">Add Patient</a>
 
     <table border="1">
-        <h2>Dossier en attente de validation</h2>
+        <h2>Dossiers en attente de confirmation expert médical</h2>
         <thead>
             <tr>
                 <th>Name</th>
@@ -25,10 +25,7 @@
                 <th>Gender</th>
                 <th>Action</th>
                 <th>Image</th>
-                <th>Prediction</th>
-                <th>validation</th>
-                <th>Statut</th>
-                <th>Rapport</th>
+                <th>Prediction IA</th>
             </tr>
         </thead>
         <tbody>
@@ -45,9 +42,6 @@
                     </td>
                     <td><img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image"></td>
                     <td>{{ patient.predict_label}}  {{ patient.predict_score }}</td>
-                    <td>{{ patient.validation }}</td>
-                    <td>{{ patient.statut }} </td>
-                    <td>{{ patient.rapport }}</td>
                 </tr>
             {% endif %}
             {% endfor %}
@@ -55,7 +49,7 @@
     </table>
 
     <table border="1">
-        <h2>Dossier validé</h2>
+        <h2>Dossiers validés</h2>
         <thead>
             <tr>
                 <th>Name</th>
@@ -63,7 +57,7 @@
                 <th>Gender</th>
                 <th>Action</th>
                 <th>Image</th>
-                <th>Prediction</th>
+                <th>Prediction IA</th>
                 <th>validation</th>
                 <th>Rapport</th>
             </tr>
