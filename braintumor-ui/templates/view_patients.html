@@ -123,10 +123,10 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
     // Ajoutez un gestionnaire d'événements aux boutons de suppression
-    var deleteButtons = document.querySelectorAll(".delete-button");
+    let deleteButtons = document.querySelectorAll(".delete-button");
     deleteButtons.forEach(function(button) {
         button.addEventListener("click", function() {
-            var patientId = button.getAttribute("data-patient-id");
+            let patientId = button.getAttribute("data-patient-id");
             // Envoyez une requête POST pour supprimer le patient
             fetch(`/delete_patient/${patientId}`, {
                 method: "POST"
