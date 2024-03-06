@@ -87,6 +87,7 @@
                         <th>Image</th>
                         <th>Prediction IA</th>
                         <th>Convergence IA/Expert</th>
+                        <th>Commentaire de l'expert</th>
                         <th>Rapport</th>
                     </tr>
                 </thead>
@@ -108,6 +109,7 @@
                         <td><img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image"></td>
                         <td>{{ patient.predict_label}}  {{ patient.predict_score *100 }}%</td>
                         <td>{{ patient.validation }}</td>
+                        <td>{{ patient.comment }}</td>
                         <td>{{ patient.rapport }}</td>
                     </tr>
                     </tr>
