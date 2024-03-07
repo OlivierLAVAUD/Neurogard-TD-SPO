@@ -42,6 +42,8 @@
 <!-- Ajouter le script JavaScript pour gérer la soumission du formulaire -->
 <!-- Ajouter le script JavaScript pour gérer la soumission du formulaire -->
 <script>
+
+
         async function submitForm() {
             const name = document.getElementById('name').value;
             const age = document.getElementById('age').value;
@@ -49,22 +51,32 @@
             const fileInput = document.getElementById('radio');
             const file = fileInput.files[0];
             const id = document.getElementById('patientId').value;
+            const url = '/edit_patient/'+ id;
 
-            const reader = new FileReader();
+            if (file != undefined) {      
+                const reader = new FileReader();         
+                reader.onload = async function () {
+                    const radio = reader.result.split(',')[1];
+                    postData(name, age, gender, radio, url);
+                }
+                await reader.readAsDataURL(file);
+            } else {
+                postData(name, age, gender, "", url);
+            }
+        }
 
-            reader.onload = async function () {
-                const fileContentBase64 = reader.result.split(',')[1];
 
-                // Construire l'objet avec les données du formulaire
-                const formData = {
+        async function postData(name, age, gender, radio, url) {
+            const formData = {
                     name: name,
                     age: age,
                     gender: gender,
-                    radio: fileContentBase64
+                    radio: radio,
+                    status: int = 0
                 };
-                
+
                 try {
-                    const response = await fetch('/edit_patient/'+ id, {
+                    const response = await fetch(url, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -81,11 +93,6 @@
                 } catch (error) {
                     console.error('Error:', error);
                 }
-            };
-
-            // Read the file content as a Data URL (base64-encoded)
-            reader.readAsDataURL(file);
-
         }
 </script>
 
