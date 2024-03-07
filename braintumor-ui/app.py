@@ -146,7 +146,7 @@ async def add_validation_post(patient_id: str, validation: bool, formData: Valid
     valid = "true" if validation else "false"
     if validation: status = 2
 
-    db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": {"validation": valid, "status": status "comment": formData.comment}})
+    db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": {"validation": valid, "status": status,"comment": formData.comment}})
     if valid == "false":
         PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
   

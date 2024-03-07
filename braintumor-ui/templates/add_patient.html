@@ -30,18 +30,13 @@
         <!-- Add other necessary fields based on the PatientModel -->
 
         <button type="button" onclick="submitForm()">Submit</button>
-        <button type="button" onchange="attachRadio()">Submit</button>
+   
     </form>
 
     <!-- Ajoutez ceci à votre fichier add_patient.html -->
     <script>
 
-        async function attachRadio() {
-        const status = document.getElementById('status');
-            status = 1 ;
-        };
-
-        async function submitForm() {
+         async function submitForm() {
             const name = document.getElementById('name').value;
             const age = document.getElementById('age').value;
             const gender = document.getElementById('gender').value;
@@ -60,7 +55,7 @@
                     age: age,
                     gender: gender,
                     radio: fileContentBase64,
-                    status: int = 0
+                    status: int = 1
                 };
                 
                 try {
