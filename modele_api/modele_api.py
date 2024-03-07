@@ -111,7 +111,7 @@ async def predict(file: UploadFile):
 
 class FeedbackData(BaseModel):
     image: str
-    prediction: str
+    prediction: float = None
     avis_expert: str
 
 
