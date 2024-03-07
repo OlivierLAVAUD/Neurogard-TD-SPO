@@ -1,0 +1,15 @@
+base64
+requests
+uvicorn
+fastapi
+pymongo
+pydantic
+mlflow
+opencv-python-headless
+pillow
+numpy
+keras
+matplotlib
+pandas
+tensorflow
+
