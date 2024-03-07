@@ -11,14 +11,17 @@ from pydantic import BaseModel
 import json
 
 import sys
-sys.path.append('../')
+
+sys.path.append("../")
 from config import HOST, PORT_APP, MONGO_SERVER, MONGO_DB, PORT_API_MODEL
 
 app = FastAPI()
 
 # Connexion à la base de données MongoDB
 client = MongoClient(MONGO_SERVER)
-db = client[MONGO_DB]  # Remplacez "your_database_name" par le nom de votre base de données MongoDB
+db = client[
+    MONGO_DB
+]  # Remplacez "your_database_name" par le nom de votre base de données MongoDB
 
 
 # Modèle Pydantic pour les données du patient
@@ -60,9 +63,11 @@ class PatientViewModel(BaseModel):
     comment: str = ""
     status: int = 0
 
+
 class ValidationModel(BaseModel):
     # Ajoutez les champs nécessaires pour les prédictions
     comment: str = ""
+
 
 # Modèle Pydantic pour les prédictions (à adapter selon vos besoins)
 class PredictionModel(BaseModel):
@@ -87,16 +92,18 @@ def add_patient(request: Request):
 @app.post("/add_patient")
 async def add_patient_post(patient: PatientModel):
     if patient.radio != "":
-        files = {'file': base64.b64decode(patient.radio)}
+        files = {"file": base64.b64decode(patient.radio)}
         # Make a POST request to the FastAPI endpoint
-        response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/predict/', files=files)
+        response = requests.post(
+            f"http://{HOST}:{PORT_API_MODEL}/predict/", files=files
+        )
         if response.status_code == 200:
-            print(f'response', json.loads(response.text))
+            print(f"response", json.loads(response.text))
             response_data = json.loads(response.text)
             patient.predict_score = round(response_data[0], 3)
             patient.predict_label = response_data[1]
         else:
-            print(f'error', response)
+            print(f"error", response)
     # Insérer le patient dans la base de données
     patient_data = patient.dict()
     db.patients.insert_one(patient_data)
@@ -107,8 +114,13 @@ async def add_patient_post(patient: PatientModel):
 @app.get("/view_patients", response_class=HTMLResponse)
 async def view_patients(request: Request):
     # Récupérer tous les patients depuis la base de données
-    patients = [PatientViewModel(id=str(patient['_id']), **patient) for patient in db.patients.find().sort('predict_score', -1)]
-    return templates.TemplateResponse("view_patients.html", {"request": request, "patients": patients})
+    patients = [
+        PatientViewModel(id=str(patient["_id"]), **patient)
+        for patient in db.patients.find().sort("predict_score", -1)
+    ]
+    return templates.TemplateResponse(
+        "view_patients.html", {"request": request, "patients": patients}
+    )
 
 
 # Route pour éditer un patient
@@ -116,77 +128,105 @@ async def view_patients(request: Request):
 async def edit_patient(request: Request, patient_id: str):
     # Récupérer les informations du patient pour affichage dans le formulaire
     patient = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
-    return templates.TemplateResponse("edit_patient.html", {"request": request, "patient": patient,
-                                                            "patient_id": patient_id})
+    return templates.TemplateResponse(
+        "edit_patient.html",
+        {"request": request, "patient": patient, "patient_id": patient_id},
+    )
+
 
 @app.post("/edit_patient/{patient_id}")
 async def edit_patient_post(patient_id: str, patient: PatientUpdateModel):
     if patient.radio != "":
-        files = {'file': base64.b64decode(patient.radio)}
+        files = {"file": base64.b64decode(patient.radio)}
         # Make a POST request to the FastAPI endpoint
-        response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/predict/', files=files)
+        response = requests.post(
+            f"http://{HOST}:{PORT_API_MODEL}/predict/", files=files
+        )
         if response.status_code == 200:
-            print(f'response', json.loads(response.text))
+            print(f"response", json.loads(response.text))
             response_data = json.loads(response.text)
             patient.predict_score = round(response_data[0], 3)
             patient.predict_label = response_data[1]
         else:
-            print(f'error', response)
+            print(f"error", response)
     # Mettre à jour le patient dans la base de données
-    db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": patient.model_dump()})
+    db.patients.update_one(
+        {"_id": ObjectId(patient_id)}, {"$set": patient.model_dump()}
+    )
     return RedirectResponse(url="/view_patients")
+
 
 # Route pour voir un patient
 @app.post("/view_patient/{patient_id}")
 async def view_patient_post(patient_id: str, patient: PatientUpdateModel):
     # Mettre à jour le patient dans la base de données
-    db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": patient.model_dump()})
+    db.patients.update_one(
+        {"_id": ObjectId(patient_id)}, {"$set": patient.model_dump()}
+    )
     return RedirectResponse(url="/view_patients")
+
 
 # Route pour voir un patient
 @app.get("/view_patient/{patient_id}", response_class=HTMLResponse)
 async def view_patient(request: Request, patient_id: str):
     # Récupérer les informations du patient pour affichage dans le formulaire
     patient = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
-    return templates.TemplateResponse("view_patient.html", {"request": request, "patient": patient,
-                                                            "patient_id": patient_id})
+    return templates.TemplateResponse(
+        "view_patient.html",
+        {"request": request, "patient": patient, "patient_id": patient_id},
+    )
+
 
 # Route pour valider le dossier patient
 @app.post("/add_validation/{patient_id}/{validation}")
-async def add_validation_post(patient_id: str, validation: bool, formData: ValidationModel):
+async def add_validation_post(
+    patient_id: str, validation: bool, formData: ValidationModel
+):
     # Mettre à jour le statut du patient dans la base de données
     valid = "true" if validation else "false"
     # if validation: status = 2
     status = 2
 
-    db.patients.update_one({"_id": ObjectId(patient_id)}, {"$set": {"validation": valid, "status": status,"comment": formData.comment}})
+    db.patients.update_one(
+        {"_id": ObjectId(patient_id)},
+        {"$set": {"validation": valid, "status": status, "comment": formData.comment}},
+    )
 
     if valid == "false":
 
-        patient_data = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
-        
-        #Envoi d'une notification à l'API modèle en cas de divergence :
-        data_divergence = {'image': patient_data.radio,
-                   'prediction': patient_data.predict_score,
-                   'avis_expert': patient_data.comment}
-        # Make a POST request to the FastAPI endpoint
-        response = requests.post(f'http://{HOST}:{PORT_API_MODEL}/feedback/', json=data_divergence)
-        if response.status_code == 200:
-            print( "Feedback envoyé avec succès.")
-            print(f'API modèle :', json.loads(response.text))
-        else:
-            print(f'error', response)
+        patient_data = PatientModel(
+            **db.patients.find_one({"_id": ObjectId(patient_id)})
+        )
 
+        # Envoi d'une notification à l'API modèle en cas de divergence :
+        data_divergence = {
+            "image": patient_data.radio,
+            "prediction": patient_data.predict_score,
+            "avis_expert": patient_data.comment,
+        }
+        # Make a POST request to the FastAPI endpoint
+        response = requests.post(
+            f"http://{HOST}:{PORT_API_MODEL}/feedback/", json=data_divergence
+        )
+        if response.status_code == 200:
+            print("Feedback envoyé avec succès.")
+            print(f"API modèle :", json.loads(response.text))
+        else:
+            print(f"error", response)
 
     return RedirectResponse(url="/view_patients")
+
 
 # Route pour valider le dossier patient
 @app.get("/add_validation/{patient_id}", response_class=HTMLResponse)
 async def add_validation(request: Request, patient_id: str):
     # Récupérer les informations du patient pour affichage dans le formulaire
     patient = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
-    return templates.TemplateResponse("add_validation.html", {"request": request, "patient": patient,
-                                                            "patient_id": patient_id})
+    return templates.TemplateResponse(
+        "add_validation.html",
+        {"request": request, "patient": patient, "patient_id": patient_id},
+    )
+
 
 # Route pour supprimer un patient
 @app.post("/delete_patient/{patient_id}")
@@ -199,5 +239,6 @@ async def delete_patient(patient_id: str):
     db.patients.delete_one({"_id": ObjectId(patient_id)})
     return {"message": "Patient deleted successfully"}
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     uvicorn.run(app, host=HOST, port=PORT_APP)
