@@ -17,3 +17,6 @@ mlartifacts/
 config.py
 .ipynb_checkpoints
 .DS_Store
+
+app.sh
+model.sh

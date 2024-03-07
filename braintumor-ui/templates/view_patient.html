@@ -30,6 +30,7 @@
 
     <!-- Ajouter un champ caché pour stocker l'ID du patient -->
     <input type="hidden" id="patientId" name="patientId" value="{{ patient_id }}">
+    <input type="hidden" id="status" name="status" value="{{ patient.status}}">
     <br>
     <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
     <br><br>

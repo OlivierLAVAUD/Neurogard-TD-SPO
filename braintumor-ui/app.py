@@ -171,9 +171,10 @@ async def view_patient_post(patient_id: str, patient: PatientUpdateModel):
 async def view_patient(request: Request, patient_id: str):
     # Récupérer les informations du patient pour affichage dans le formulaire
     patient = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
+    status = PatientModel(**db.patients.find_one({"_id": ObjectId(status)}))
     return templates.TemplateResponse(
         "view_patient.html",
-        {"request": request, "patient": patient, "patient_id": patient_id},
+        {"request": request, "patient": patient, "patient_id": patient_id, "status": status},
     )
 
 
