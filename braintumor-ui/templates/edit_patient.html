@@ -30,6 +30,7 @@
 
     <!-- Ajouter un champ caché pour stocker l'ID du patient -->
     <input type="hidden" id="patientId" name="patientId" value="{{ patient_id }}">
+    <input type="hidden" id="patientId" name="patientId" value="{{ patient.status }}">
     <br>
     <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
     <br><br>
@@ -51,6 +52,7 @@
             const fileInput = document.getElementById('radio');
             const file = fileInput.files[0];
             const id = document.getElementById('patientId').value;
+//            const status = document.getElementById('status').value;
             const url = '/edit_patient/'+ id;
 
             if (file != undefined) {      

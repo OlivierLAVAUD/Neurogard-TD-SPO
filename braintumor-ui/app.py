@@ -128,6 +128,7 @@ async def view_patients(request: Request):
 async def edit_patient(request: Request, patient_id: str):
     # Récupérer les informations du patient pour affichage dans le formulaire
     patient = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
+  #  status = PatientModel(**db.patients.find_one({"_id": ObjectId(status)}))
     return templates.TemplateResponse(
         "edit_patient.html",
         {"request": request, "patient": patient, "patient_id": patient_id},
@@ -147,6 +148,7 @@ async def edit_patient_post(patient_id: str, patient: PatientUpdateModel):
             response_data = json.loads(response.text)
             patient.predict_score = round(response_data[0], 3)
             patient.predict_label = response_data[1]
+            
         else:
             print(f"error", response)
     # Mettre à jour le patient dans la base de données
@@ -171,10 +173,11 @@ async def view_patient_post(patient_id: str, patient: PatientUpdateModel):
 async def view_patient(request: Request, patient_id: str):
     # Récupérer les informations du patient pour affichage dans le formulaire
     patient = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
-    status = PatientModel(**db.patients.find_one({"_id": ObjectId(status)}))
+ #   status = PatientModel(**db.patients.find_one({"_id": ObjectId(status)}))
     return templates.TemplateResponse(
         "view_patient.html",
-        {"request": request, "patient": patient, "patient_id": patient_id, "status": status},
+ #       {"request": request, "patient": patient, "patient_id": patient_id, "status": status},
+         {"request": request, "patient": patient, "patient_id": patient_id, "status": status},
     )
 
 
