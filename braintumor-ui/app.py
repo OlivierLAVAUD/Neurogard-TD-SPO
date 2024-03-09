@@ -174,7 +174,12 @@ async def view_patient(request: Request, patient_id: str):
     status = PatientModel(**db.patients.find_one({"_id": ObjectId(status)}))
     return templates.TemplateResponse(
         "view_patient.html",
-        {"request": request, "patient": patient, "patient_id": patient_id, "status": status},
+        {
+            "request": request,
+            "patient": patient,
+            "patient_id": patient_id,
+            "status": status,
+        },
     )
 
 
