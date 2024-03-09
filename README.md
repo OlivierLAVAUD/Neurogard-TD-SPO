@@ -43,6 +43,10 @@ project/
 ## Requirement:
 voir requirements.txt
 
+## Configuration
+
+    Creer un fichier config.py et le completer à partir du modele.config.py 
+
 ## Démarrer l'app:
 
 1 - démarrer un serveur mlflow par exemple sur le port PORT_API_MODEL

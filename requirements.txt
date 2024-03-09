@@ -12,4 +12,3 @@ keras
 matplotlib
 pandas
 tensorflow
-
