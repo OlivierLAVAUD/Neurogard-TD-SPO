@@ -68,12 +68,14 @@
 
 
         async function postData(name, age, gender, radio, url) {
+            if (radio != "") {status = 1}
+            else {status = 0}
             const formData = {
                     name: name,
                     age: age,
                     gender: gender,
                     radio: radio,
-                    status: int = 0
+                    status: status
                 };
 
                 try {
