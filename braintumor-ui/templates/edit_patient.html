@@ -32,9 +32,18 @@
     <input type="hidden" id="patientId" name="patientId" value="{{ patient_id }}">
     <input type="hidden" id="status" name="status" value="{{ patient.status }}">
     <br>
+    <!-- <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
+    <br><br>
+    <input type="file" id="radio"> -->
+
+    <!-- Afficher l'image si elle n'est pas vide -->
+    {% if patient.radio %}
     <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
     <br><br>
+    {% endif %}
+
     <input type="file" id="radio">
+    <br><br>
 
     <!-- Ajouter un bouton pour soumettre le formulaire -->
     <button type="button" id="submitBtn" onclick="submitForm()">Submit</button>
