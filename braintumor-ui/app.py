@@ -179,7 +179,6 @@ async def view_patient(request: Request, patient_id: str):
             "request": request,
             "patient": patient,
             "patient_id": patient_id,
-            "status": status,
         },
     )
 
