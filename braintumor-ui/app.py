@@ -175,7 +175,12 @@ async def view_patient(request: Request, patient_id: str):
 
     return templates.TemplateResponse(
         "view_patient.html",
-         {"request": request, "patient": patient, "patient_id": patient_id},
+        {
+            "request": request,
+            "patient": patient,
+            "patient_id": patient_id,
+            "status": status,
+        },
     )
 
 
