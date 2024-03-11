@@ -34,8 +34,13 @@
     <br>
     <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
     <br><br>
+            {% if patient.status == 2 %}
+    <div>Commentaire de l'expert : </div>
+    <div>{{ patient.comment }}</div>
+    <br><br>
     <button type="button" onclick="printDoc()">Imprimer le rapport</button>
     <br><br>
+    {% endif %}
 
 </form>
 <script>
