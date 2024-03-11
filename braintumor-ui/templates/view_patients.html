@@ -89,8 +89,6 @@
                         <th>Gender</th>
                         <th>Action</th>
                         <th>Image</th>
-                        <th>Prediction IA</th>
-                        <th>Convergence IA/Expert</th>
                         <th>Commentaire de l'expert</th>
                         <th>Rapport</th>
                     </tr>
@@ -111,8 +109,6 @@
                             <a href="#" class="delete-button" data-patient-id="{{ patient.id }}">Supprimer</a>
                         </td>
                         <td><img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image"></td>
-                        <td>{{ patient.predict_label}}  {{ '%.1f' % (patient.predict_score * 100) }}%</td>
-                        <td>{{ patient.validation }}</td>
                         <td>{{ patient.comment }}</td>
                         <td>{{ patient.rapport }}</td>
                     </tr>

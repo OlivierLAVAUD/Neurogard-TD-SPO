@@ -35,6 +35,7 @@ class PatientModel(BaseModel):
     validation: str = ""
     comment: str = ""
     status: int = 0
+    timestamps : date
 
 
 # Modèles Pydantic pour la modification du patient
@@ -179,7 +180,6 @@ async def view_patient(request: Request, patient_id: str):
             "request": request,
             "patient": patient,
             "patient_id": patient_id,
-            "status": status,
         },
     )
 
