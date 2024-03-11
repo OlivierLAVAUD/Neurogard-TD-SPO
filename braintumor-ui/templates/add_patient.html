@@ -28,6 +28,7 @@
         <input type="file" id="radio">
      
         <input type="hidden" id="patientId" name="patientId" value="{{ status }}">
+        <input type="hidden" id="patientId" name="patientId" value="{{ timestamp }}">
        
 
         <!-- Add other necessary fields based on the PatientModel -->
@@ -45,6 +46,8 @@
             const gender = document.getElementById('gender').value;
             const fileInput = document.getElementById('radio');
             const file = fileInput.files[0];
+   //        const timestamp = document.getElementById('timestamp')
+   //         timestamp = 0  
             let status = 0; // Initialisation à 0
 
             const url = '/add_patient';
@@ -53,22 +56,24 @@
                 const reader = new FileReader();
                 reader.onload = async function () {
                     const radio = reader.result.split(',')[1];
-                    status = 1; // Changement à 1 si un fichier est attaché
-                    postData(name, age, gender, radio, status, url);                  
-                }
+    //                status = 1; // Changement à 1 si un fichier est attaché
+                    timestamp = new Date(); // Mise à jour de l'heure actuelle
+                    postData(name, age, gender, radio, status, timestamp, url);                  
+                } 
                 await reader.readAsDataURL(file);
             } else {
-                postData(name, age, gender, "", status, url);
+                postData(name, age, gender, "", status, 0, url);
             }
         }
 
-        async function postData(name, age, gender, radio, status, url) {
+        async function postData(name, age, gender, radio, status, timestamp, url) {
             const formData = {
                 name: name,
                 age: age,
                 gender: gender,
                 radio: radio,
-                status: status
+                status: status,
+                timestamp: timestamp
             };
 
             try {
