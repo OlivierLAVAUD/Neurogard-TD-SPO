@@ -8,6 +8,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from pymongo import MongoClient
 from bson import ObjectId
 from pydantic import BaseModel
+from datetime import datetime
 import json
 
 import sys
@@ -35,7 +36,8 @@ class PatientModel(BaseModel):
     validation: str = ""
     comment: str = ""
     status: int = 0
-    timestamps : date
+    tumor: bool = False
+    timestamp: datetime = 0
 
 
 # Modèles Pydantic pour la modification du patient
@@ -49,6 +51,8 @@ class PatientUpdateModel(BaseModel):
     validation: str = ""
     comment: str = ""
     status: int = 0
+    tumor: bool = False
+    timestamp: datetime = 0 
 
 
 # Modèles Pydantic pour la visualisation des patients
@@ -63,6 +67,8 @@ class PatientViewModel(BaseModel):
     validation: str = ""
     comment: str = ""
     status: int = 0
+    tumor: bool = False
+    timestamp: datetime = 0
 
 
 class ValidationModel(BaseModel):
@@ -177,7 +183,7 @@ async def view_patient(request: Request, patient_id: str):
     return templates.TemplateResponse(
         "view_patient.html",
         {
-            "request": request,
+            "request": request, 
             "patient": patient,
             "patient_id": patient_id,
         },

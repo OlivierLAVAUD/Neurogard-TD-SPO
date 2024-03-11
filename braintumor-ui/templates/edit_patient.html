@@ -31,10 +31,20 @@
     <!-- Ajouter un champ caché pour stocker l'ID du patient -->
     <input type="hidden" id="patientId" name="patientId" value="{{ patient_id }}">
     <input type="hidden" id="status" name="status" value="{{ patient.status }}">
+    <input type="hidden" id="patientId" name="patientId" value="{{ timestamp }}">
     <br>
+    <!-- <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
+    <br><br>
+    <input type="file" id="radio"> -->
+
+    <!-- Afficher l'image si elle n'est pas vide -->
+    {% if patient.radio %}
     <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
     <br><br>
+    {% endif %}
+
     <input type="file" id="radio">
+    <br><br>
 
     <!-- Ajouter un bouton pour soumettre le formulaire -->
     <button type="button" id="submitBtn" onclick="submitForm()">Submit</button>
@@ -58,25 +68,25 @@
                 const reader = new FileReader();         
                 reader.onload = async function () {
                     const radio = reader.result.split(',')[1];
-                    postData(name, age, gender, radio, url);
+                    postData(name, age, gender, radio, status, timestamp,url);
                 }
                 await reader.readAsDataURL(file);
             } else {
-                postData(name, age, gender, "", url);
+                postData(name, age, gender, "", 0 , 0 ,url);
             }
         }
 
 
-        async function postData(name, age, gender, radio, url) {
-            if (radio != "") {status = 1}
-            else {status = 0}
+        async function postData(name, age, gender, radio, status, timestamp, url) {
             const formData = {
-                    name: name,
-                    age: age,
-                    gender: gender,
-                    radio: radio,
-                    status: status
-                };
+                name: name,
+                age: age,
+                gender: gender,
+                radio: radio,
+                status: status,
+                timestamp: timestamp
+            };
+
 
                 try {
                     const response = await fetch(url, {

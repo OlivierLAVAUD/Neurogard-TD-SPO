@@ -103,9 +103,9 @@ async def predict(file: UploadFile):
     # Extraire la probabilité de la tumeur
     tumor_probability = prediction_result[0][0]
     if tumor_probability < 0.5:
-        label = "Tumeur NO"
+        label = "Pas de tumeur détectée"
     else:
-        label = "Tumeur YES"
+        label = "Tumeur détectée"
     return tumor_probability, label
 
 
