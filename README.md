@@ -9,6 +9,7 @@ On utilise Pydantic pour la validation des données
 
 ## Structure du projet
 
+```bash
 project/
 │
 ├── braintumor-ui/
@@ -39,6 +40,7 @@ project/
 ├── config.py.example       # A dupliquer pour créer config.py
 │
 └── README.md
+```
 
 ## Requirement:
 voir requirements.txt
