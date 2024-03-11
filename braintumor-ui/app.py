@@ -108,6 +108,8 @@ async def add_patient_post(patient: PatientModel):
             response_data = json.loads(response.text)
             patient.predict_score = round(response_data[0], 3)
             patient.predict_label = response_data[1]
+            if patient.predict_score > 0.5:
+                patient.tumor = True
         else:
             print(f"error", response)
     # Insérer le patient dans la base de données
@@ -153,6 +155,8 @@ async def edit_patient_post(patient_id: str, patient: PatientUpdateModel):
             response_data = json.loads(response.text)
             patient.predict_score = round(response_data[0], 3)
             patient.predict_label = response_data[1]
+        if patient.predict_score > 0.5:
+            patient.tumor = True
             
         else:
             print(f"error", response)
@@ -199,6 +203,8 @@ async def add_validation_post(
     # if validation: status = 2
     status = 2
 
+
+
     db.patients.update_one(
         {"_id": ObjectId(patient_id)},
         {"$set": {"validation": valid, "status": status, "comment": formData.comment}},
@@ -208,6 +214,12 @@ async def add_validation_post(
 
         patient_data = PatientModel(
             **db.patients.find_one({"_id": ObjectId(patient_id)})
+        )
+        # Mettre à jour tumor dans la bdd
+        tumor = not patient_data.tumor
+        db.patients.update_one(
+            {"_id": ObjectId(patient_id)},
+            {"$set": {"tumor": tumor}},
         )
 
         # Envoi d'une notification à l'API modèle en cas de divergence :
