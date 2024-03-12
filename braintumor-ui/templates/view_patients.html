@@ -114,7 +114,8 @@
                         <td>{{ patient.predict_label}}  {{ '%.1f' % (patient.predict_score * 100) }}%</td>
                         <td>{{ patient.tumor }}</td>
                         <td>{{ patient.comment }}</td>
-                        <td>{{ patient.rapport }}</td>
+                        <td><a href="{{ url_for('view_patient', patient_id=patient.id) }}">Impression</a></td>
+
                     </tr>
                     </tr>
                     {% endif %}
