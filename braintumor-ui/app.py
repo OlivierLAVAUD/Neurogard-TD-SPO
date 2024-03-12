@@ -125,7 +125,7 @@ async def view_patients(request: Request):
     # Récupérer tous les patients depuis la base de données
     patients = [
         PatientViewModel(id=str(patient["_id"]), **patient)
-        for patient in db.patients.find().sort("predict_score", -1)
+        for patient in sorted(db.patients.find(), key=lambda x: (not x["tumor"], -x["predict_score"]))
     ]
     return templates.TemplateResponse(
         "view_patients.html", {"request": request, "patients": patients}
