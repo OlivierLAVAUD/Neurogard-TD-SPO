@@ -32,7 +32,7 @@
         <input type="hidden" id="patientId" name="patientId" value="{{ patient_id }}">
         <br>
         <div>Prédiction : </div><br>
-        <div><b>{{ patient.predict_label }} {{ patient.predict_score }}%</b></div><br>
+        <div><b>{{ patient.predict_label }} {{ '%.1f' % (patient.predict_score * 100) }}%</b></div><br>
         <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
         <br><br>
 
