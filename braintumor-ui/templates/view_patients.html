@@ -58,7 +58,7 @@
                 </thead>
                 <tbody>
                     {% for patient in patients %}
-                    {% if patient.status == 1 %} <!-- and patient.radio != "" -->
+                    {% if patient.status == 1 %}
                         <tr>
                             <td>{{ patient.name }}</td>
                             <td>{{ patient.age }}</td>
@@ -89,9 +89,9 @@
                         <th>Gender</th>
                         <th>Action</th>
                         <th>Image</th>
-                        <th>Prediction IA</th>
-                        <th>Convergence IA/Expert</th>
-                        <th>Commentaire de l'expert</th>
+                        <th>IA Prediction</th>
+                        <th>Expertised Tumor</th>
+                        <th>Expert Comment</th>
                         <th>Rapport</th>
                     </tr>
                 </thead>
@@ -112,7 +112,7 @@
                         </td>
                         <td><img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image"></td>
                         <td>{{ patient.predict_label}}  {{ '%.1f' % (patient.predict_score * 100) }}%</td>
-                        <td>{{ patient.validation }}</td>
+                        <td>{{ patient.tumor }}</td>
                         <td>{{ patient.comment }}</td>
                         <td>{{ patient.rapport }}</td>
                     </tr>
