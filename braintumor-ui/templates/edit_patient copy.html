@@ -1,0 +1,114 @@
+<!-- edit_patient.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Patient</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='styles.css') }}">
+</head>
+<body>
+
+<h1>Edit Patient {{ patient.name }}</h1>
+
+<form id="editPatientForm">
+    <!-- Ajouter des champs pour éditer les informations du patient -->
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required value="{{ patient.name }}">
+    <br>
+
+    <label for="age">Age:</label>
+    <input type="number" id="age" name="age" required value="{{ patient.age }}">
+    <br>
+
+    <label for="gender">Gender:</label>
+    <select id="gender" name="gender" required>
+        <option value="male" {{ "selected" if patient.gender == "male" else "" }}>Male</option>
+        <option value="female" {{ "selected" if patient.gender == "female" else "" }}>Female</option>
+    </select>
+    <br>
+
+    <!-- Ajouter un champ caché pour stocker l'ID du patient -->
+    <input type="hidden" id="patientId" name="patientId" value="{{ patient_id }}">
+    <input type="hidden" id="status" name="status" value="{{ patient.status }}">
+    <input type="hidden" id="patientId" name="patientId" value="{{ timestamp }}">
+    <br>
+    <!-- <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
+    <br><br>
+    <input type="file" id="radio"> -->
+
+    <!-- Afficher l'image si elle n'est pas vide -->
+    {% if patient.radio %}
+    <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
+    <br><br>
+    {% endif %}
+
+    <input type="file" id="radio">
+    <br><br>
+
+    <!-- Ajouter un bouton pour soumettre le formulaire -->
+    <button type="button" id="submitBtn" onclick="submitForm()">Submit</button>
+</form>
+
+<!-- Ajouter le script JavaScript pour gérer la soumission du formulaire -->
+<!-- Ajouter le script JavaScript pour gérer la soumission du formulaire -->
+<script>
+
+        async function submitForm() {
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+            const fileInput = document.getElementById('radio');
+            const file = fileInput.files[0];
+            let status = 0; // Initialisation à 0
+
+            const url = '/edit_patient';
+
+            if (file !== undefined && file !== null) {
+                const reader = new FileReader();
+                reader.onload = async function () {
+                    const radio = reader.result.split(',')[1];
+                    status = 1; // Changement à 1 si un fichier est attaché
+                    timestamp = new Date(); // Mise à jour de l'heure actuelle
+                    postData(name, age, gender, radio, status, timestamp, url);                  
+                } 
+                await reader.readAsDataURL(file);
+            } else {
+                postData(name, age, gender, "", status, 0, url);
+            }
+        }
+
+
+        async function postData(name, age, gender, radio, status, timestamp, url) {
+            const formData = {
+                name: name,
+                age: age,
+                gender: gender,
+                radio: radio,
+                status: status,
+                timestamp: timestamp
+            };
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Rediriger vers la vue des patients après l'édition
+                        window.location.href = '/view_patients';
+                    })
+                    .catch(error => console.error('Error:', error));
+
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+        }
+</script>
+
+</body>
+</html>

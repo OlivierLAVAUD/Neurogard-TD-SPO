@@ -179,7 +179,7 @@ async def edit_patient_post(patient_id: str, patient: PatientUpdateModel):
 
 
 # Route pour voir un patient
-# @app.post("/view_patient/{patient_id}")
+# @app.post("/view_patient/{patient_id}"    )
 # async def view_patient_post(patient_id: str, patient: PatientUpdateModel):
 #     # Mettre à jour le patient dans la base de données
 #     db.patients.update_one(
