@@ -58,8 +58,10 @@ mlflow server --host 127.0.0.1 --port PORT_API_MODEL
 ```
 
 2 - executer le notebook process-data.ipynb
-cela permet d'entrainer un modèle
-Se connecter à mlFlow et récupérer l'id du runs
+Dans le repo, il faut dans un premier temps créer un répertoire data/ et y venir y stocker un dossier raw/yes et no avec des images de tumeurs que l'on peut se procurer sur kaggle.
+
+L'execution du notebook permet d'entrainer un modele sur ces images.
+Se connecter ensuite à mlFlow et récupérer l'id du runs
 
 3 - dupliquer le fichier config.py.example et le renommer config.py
 dans ce fichier saisir le port mlflow choisi, le runs du modele créé précedemment dans mlflow, les paramètres MongoDB et le port choisi pour l'app
