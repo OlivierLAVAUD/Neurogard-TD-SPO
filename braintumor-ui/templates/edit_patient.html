@@ -30,41 +30,65 @@
 
     <!-- Ajouter un champ caché pour stocker l'ID du patient -->
     <input type="hidden" id="patientId" name="patientId" value="{{ patient_id }}">
+    <input type="hidden" id="status" name="status" value="{{ patient.status }}">
+    <input type="hidden" id="patientId" name="patientId" value="{{ timestamp }}">
     <br>
+
+    <!-- Afficher l'image si elle n'est pas vide -->
+    {% if patient.radio %}
     <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
     <br><br>
-    <input type="file" id="radio">
+    {% endif %}
+
+    <input type="file" id="radioFileInput">
+    <br><br>
 
     <!-- Ajouter un bouton pour soumettre le formulaire -->
     <button type="button" id="submitBtn" onclick="submitForm()">Submit</button>
 </form>
 
 <!-- Ajouter le script JavaScript pour gérer la soumission du formulaire -->
-<!-- Ajouter le script JavaScript pour gérer la soumission du formulaire -->
+
 <script>
+
+
         async function submitForm() {
             const name = document.getElementById('name').value;
             const age = document.getElementById('age').value;
             const gender = document.getElementById('gender').value;
-            const fileInput = document.getElementById('radio');
+            const fileInput = document.getElementById('radioFileInput');
             const file = fileInput.files[0];
             const id = document.getElementById('patientId').value;
+            const url = '/edit_patient/'+ id;
 
-            const reader = new FileReader();
+            if (file != undefined) {      
+                const reader = new FileReader();         
+                reader.onload = async function () {
+                    const radio = reader.result.split(',')[1];
+                    const status = 1
+                    timestamp = new Date();
+                    postData(name, age, gender, radio, status, timestamp,url);
+                }
+                await reader.readAsDataURL(file);
+            } else {
+                postData(name, age, gender, "", 0 , 0 ,url);
+            }
+        }
 
-            reader.onload = async function () {
-                const fileContentBase64 = reader.result.split(',')[1];
 
-                // Construire l'objet avec les données du formulaire
-                const formData = {
-                    name: name,
-                    age: age,
-                    gender: gender,
-                    radio: fileContentBase64
-                };
-                
+        async function postData(name, age, gender, radio, status, timestamp, url) {
+            const formData = {
+                name: name,
+                age: age,
+                gender: gender,
+                radio: radio,
+                status: status,
+                timestamp: timestamp
+            };
+
+
                 try {
-                    const response = await fetch('/edit_patient/'+ id, {
+                    const response = await fetch(url, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -81,11 +105,6 @@
                 } catch (error) {
                     console.error('Error:', error);
                 }
-            };
-
-            // Read the file content as a Data URL (base64-encoded)
-            reader.readAsDataURL(file);
-
         }
 </script>
 

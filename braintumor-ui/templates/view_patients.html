@@ -26,13 +26,14 @@
         </thead>
         <tbody>
             {% for patient in patients %}
-            {% if patient.status == 0 and patient.radio == "" %} <!-- a modifier en status == 0 lorsque ce statut sera operationnel-->
+            {% if patient.status == 0 %} <!-- and patient.radio == "" -->
                 <tr>
                     <td>{{ patient.name }}</td>
                     <td>{{ patient.age }}</td>
                     <td>{{ patient.gender }}</td>
                     <td>
                         <a href="{{ url_for('edit_patient', patient_id=patient.id) }}">Edit</a><br>
+                        <a href="#" class="delete-button" data-patient-id="{{ patient.id }}">Supprimer</a>
                     </td>
                 </tr>
             {% endif %}
@@ -41,7 +42,9 @@
     </table>
     <div class="table-container">
         <div>
+            <div class="nom_dossier">
             <h2>Dossiers en attente de confirmation expert médical</h2>
+            </div>
             <table border="1">
                 <thead>
                     <tr>
@@ -55,7 +58,7 @@
                 </thead>
                 <tbody>
                     {% for patient in patients %}
-                    {% if patient.status == 0 and patient.radio != "" %} <!-- a modifier en status == 1 lorsque ce statut sera operationnel-->
+                    {% if patient.status == 1 %}
                         <tr>
                             <td>{{ patient.name }}</td>
                             <td>{{ patient.age }}</td>
@@ -64,6 +67,7 @@
                                 <a href="{{ url_for('edit_patient', patient_id=patient.id) }}">Edit</a><br>
                                 <a href="{{ url_for('view_patient', patient_id=patient.id) }}">Voir patient</a><br>
                                 <a href="{{ url_for('add_validation', patient_id=patient.id) }}">Validation</a>
+                                <a href="#" class="delete-button" data-patient-id="{{ patient.id }}">Supprimer</a>                                
                             </td>
                             <td><img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image"></td>
                             <td>{{ patient.predict_label}}  {{ '%.1f' % (patient.predict_score * 100) }}%</td>
@@ -74,7 +78,9 @@
             </table>
         </div>
         <div>
+            <div class="nom_dossier">
             <h2>Dossiers expertisés</h2>
+            </div>
             <table border="1">
                 <thead>
                     <tr>
@@ -83,8 +89,9 @@
                         <th>Gender</th>
                         <th>Action</th>
                         <th>Image</th>
-                        <th>Prediction IA</th>
-                        <th>Convergence IA/Expert</th>
+                        <th>IA Prediction</th>
+                        <th>Expertised Tumor</th>
+                        <th>Expert Comment</th>
                         <th>Rapport</th>
                     </tr>
                 </thead>
@@ -101,11 +108,14 @@
                             <a href="{{ url_for('edit_patient', patient_id=patient.id) }}">Edit</a><br>
                             <a href="{{ url_for('view_patient', patient_id=patient.id) }}">Voir patient</a><br>
                             <a href="{{ url_for('add_validation', patient_id=patient.id) }}">Validation</a>
+                            <a href="#" class="delete-button" data-patient-id="{{ patient.id }}">Supprimer</a>
                         </td>
                         <td><img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image"></td>
                         <td>{{ patient.predict_label}}  {{ '%.1f' % (patient.predict_score * 100) }}%</td>
-                        <td>{{ patient.validation }}</td>
+                        <td>{{ patient.tumor }}</td>
+                        <td>{{ patient.comment }}</td>
                         <td><a href="{{ url_for('view_patient', patient_id=patient.id) }}">Impression</a></td>
+
                     </tr>
                     </tr>
                     {% endif %}
@@ -114,7 +124,28 @@
                 </tbody>
             </table>
         </div>
-    </div>       
+    </div> 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+    // Ajoutez un gestionnaire d'événements aux boutons de suppression
+    let deleteButtons = document.querySelectorAll(".delete-button");
+    deleteButtons.forEach(function(button) {
+        button.addEventListener("click", function() {
+            let patientId = button.getAttribute("data-patient-id");
+            // Envoyez une requête POST pour supprimer le patient
+            fetch(`/delete_patient/${patientId}`, {
+                method: "POST"
+            }).then(function(response) {
+                // Redirigez l'utilisateur vers la page de visualisation des patients après la suppression
+                window.location.href = "/view_patients";
+            }).catch(function(error) {
+                console.error("Une erreur s'est produite lors de la suppression du patient :", error);
+            });
+        });
+    });
+});
+
+    </script>      
 </body>
 
 </html>

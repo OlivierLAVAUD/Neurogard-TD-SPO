@@ -26,19 +26,26 @@
     <br><br>
 
     <div>Prédiction IA: </div><br>
-    <div><b>{{ patient.predict_label}}  {{ patient.predict_score }}%</b></div><br>
+    <div><b>{{ patient.predict_label}}  {{ '%.1f' % (patient.predict_score * 100) }}%</b></div><br>
 
     <!-- Ajouter un champ caché pour stocker l'ID du patient -->
     <input type="hidden" id="patientId" name="patientId" value="{{ patient_id }}">
+    <input type="hidden" id="status" name="status" value="{{ patient.status }}">
     <br>
     <img src="data:image/jpeg;base64,{{ patient.radio }}" id="radio_image" name="radio_image">
     <br><br>
-    <button type="button" onclick="printdDoc()">Imprimer le rapport</button>
+            {% if patient.status == 2 %}
+    <div>Commentaire de l'expert : </div>
+    <div>{{ patient.comment }}</div>
     <br><br>
+    <button type="button" onclick="printDoc()">Imprimer le rapport</button>
+    <br><br>
+    {% endif %}
 
 </form>
 <script>
     async function printDoc() {
+        
         const status = document.getElementById('status').value
         if (status == 2) {window.print()} 
     return
