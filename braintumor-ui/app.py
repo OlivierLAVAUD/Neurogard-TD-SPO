@@ -153,6 +153,7 @@ async def edit_patient_post(patient_id: str, patient: PatientUpdateModel):
         )
         if response.status_code == 200:
             print(f"response", json.loads(response.text))
+            patient.status = 1
             response_data = json.loads(response.text)
             patient.predict_score = round(response_data[0], 3)
             patient.predict_label = response_data[1]
@@ -161,21 +162,30 @@ async def edit_patient_post(patient_id: str, patient: PatientUpdateModel):
             
         else:
             print(f"error", response)
+    
+    else :
+        patientDb = PatientModel(**db.patients.find_one({"_id": ObjectId(patient_id)}))
+        patient.radio = patientDb.radio
+        patient.status = patientDb.status
+        patient.predict_score = patientDb.predict_score
+        patient.predict_label = patientDb.predict_label
+
     # Mettre à jour le patient dans la base de données
     db.patients.update_one(
         {"_id": ObjectId(patient_id)}, {"$set": patient.model_dump()}
     )
+    print("Patient updated successfully")
     return RedirectResponse(url="/view_patients")
 
 
 # Route pour voir un patient
-@app.post("/view_patient/{patient_id}")
-async def view_patient_post(patient_id: str, patient: PatientUpdateModel):
-    # Mettre à jour le patient dans la base de données
-    db.patients.update_one(
-        {"_id": ObjectId(patient_id)}, {"$set": patient.model_dump()}
-    )
-    return RedirectResponse(url="/view_patients")
+# @app.post("/view_patient/{patient_id}")
+# async def view_patient_post(patient_id: str, patient: PatientUpdateModel):
+#     # Mettre à jour le patient dans la base de données
+#     db.patients.update_one(
+#         {"_id": ObjectId(patient_id)}, {"$set": patient.model_dump()}
+#     )
+#     return RedirectResponse(url="/view_patients")
 
 
 # Route pour voir un patient
