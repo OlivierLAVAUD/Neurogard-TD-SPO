@@ -39,6 +39,7 @@ class PatientModel(BaseModel):
     tumor: bool = False
     timestamp: datetime = 0
 
+
 # Modèles Pydantic pour la modification du patient
 class PatientUpdateModel(BaseModel):
     name: str
